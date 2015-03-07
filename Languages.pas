@@ -21,12 +21,12 @@ unit Languages;
 interface
 
 type
-  TLanguage = (lngEN, lngFR, lngDE, lngPL, lngRU, lngUA, lngHU, lngFI, lngNL);
+  TLanguage = (lngEN, lngFR, lngDE, lngPL, lngRU, lngUA, lngHU, lngFI, lngNL, lngES);
   // /!\ Keep the same order in arrays /!\ //
 
 const
   _VERSION_ = 'v2.8';
-  LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl');
+  LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl', 'es');
 
   sSelectDirectory: array[TLanguage] of String = (
     'Select World of Tanks installation directory:',
@@ -37,7 +37,8 @@ const
     'Виберіть каталог з інстальованою грою World of Tanks:',
     'Válaszd ki a World of Tanks telepítési mappáját:',
     'Valitse World of Tanks asennus kansio:',
-    'Selecteer de World of Tanks installatiemap'
+    'Selecteer de World of Tanks installatiemap',
+    'Seleccione el directorio de instalación de World of Tanks'
   );
 
   sFailDirectory: array[TLanguage] of String = (
@@ -49,7 +50,8 @@ const
     'Не можу знайти гру в каталозі, що ви вказали. Спробувати ще?',
     'A játékot nem sikerült azonosítani a megadott mappában. Szeretnéd újrapróbálni?',
     'Peliä ei löydä tästä kasiosta, haluatko kokeilla toista kansiota?',
-    'Geen World of Tanks installatie gevonden in deze map, wilt u het opnieuw proberen?'
+    'Geen World of Tanks installatie gevonden in deze map, wilt u het opnieuw proberen?',
+    'No se puede detectar el juego en este directorio, ¿desea probar de nuevo?'
   );
 
   sSpecifyDirectory: array[TLanguage] of String = (
@@ -61,7 +63,8 @@ const
     'Не можу знайти каталог World of Tanks.'+#13#10+'Будьласка, вкажіть її вручну.',
     'Nem sikerült megtalálni a World of Tanks telepítési mappáját.'+#13#10+'Kérlek, válaszd ki manuálisan.',
     'World of Tanks asennus kansiota ei löydy.'+#13#10+'Ole hyvä ja kirjoita kansio.',
-    'Geen World of Tanks installatie gevonden.'+#13#10+'Geef het handmatig op.'
+    'Geen World of Tanks installatie gevonden.'+#13#10+'Geef het handmatig op.',
+    'No se puede detectar el directorio de instalación de World of Tanks.'+#13#10+'Por favor, especifíquelo manualmente.'
   );
 
   sClientRunning: array[TLanguage] of String = (
@@ -73,7 +76,8 @@ const
     'Будьласка, вийдіть з World of Tanks для, встановлення'+#13#10+'чи оновлення XVM.',
     'Kérlek, zárd be a World of Tanks klienst,'+#13#10+'mielőtt megkezdenéd az XVM telepítését vagy frissítését.',
     'Ole hyvä ja poistu World of Tanks pelistä ennen'+#13#10+'XVM asenusta, tai päivitystä',
-    'Sluit de World of Tanks client voordat u verder gaat'+#13#10+'met het installeren of updaten van XVM.'
+    'Sluit de World of Tanks client voordat u verder gaat'+#13#10+'met het installeren of updaten van XVM.',
+    'Por favor, cierre World of Tanks antes de proceder'+#13#10+'a la instalación o la actualización de XVM.'
   );
 
   sFailModsDir: array[TLanguage] of String = (
@@ -85,7 +89,8 @@ const
     'Каталог інсталяції помилкова чи пошкоджена.'+#13#10+'Не можу перевірити вміст каталогу "res_mods".',
     'A telepítési mappa nem megfelelő vagy sérült.'+#13#10+'A "res_mods" mappa tartalma nem ellenőrizhető.',
     'Asennus kansio on väärä, tai vahingoittunut'+#13#10+'Ei voi tarkistaa "res_mods" hakemiston sisältöä.',
-    'De installatiemap is ongeldig of currupt.'+#13#10+'De inhoud van "res_mods" kon niet gecontroleerd worden.'
+    'De installatiemap is ongeldig of currupt.'+#13#10+'De inhoud van "res_mods" kon niet gecontroleerd worden.',
+    'El directorio de la instalación no es correcto o esta corrupto.'+#13#10+'Imposible comprovar el contenido del directorio "res_mods".'
   );
 
   sScriptDownload: array[TLanguage] of String = (
@@ -97,7 +102,8 @@ const
     'Завантажую сценарії інсталяції...',
     'Telepítő parancsfájl letöltése...',
     'Ladataan asennustiedostoja...',
-    'Installatie script downloaden...'
+    'Installatie script downloaden...',
+    'Descargando el script de instalación...'
   );
 
   sInformationsCollecting: array[TLanguage] of String = (
@@ -109,7 +115,8 @@ const
     'Збір необхідної інформації...',
     'Szükséges adatok összegyűjtése...',
     'Kerätään tarvittavia tietoja...',
-    'Benodigde informatie verzamelen...'
+    'Benodigde informatie verzamelen...',
+    'Recolectando la información necesaria...'
   );
 
   sFailDownload: array[TLanguage] of String = (
@@ -121,7 +128,8 @@ const
     'Помилка завантаження:',
     'Hiba letöltés közben:',
     'Virhe ladattaessa:',
-    'Er is een fout opgetreden tijdens het downloaden:'
+    'Er is een fout opgetreden tijdens het downloaden:',
+    'Error durante la descarga:'
   );
 
   sForcedSource: array[TLanguage] of String = (
@@ -133,7 +141,8 @@ const
     'Змушені cценарії джерела з командного рядка.',
     'A parancsfájl meg lett változtatva.',
     'Lähde edelleenohjattu komentorivillä.',
-    'Script bron geforceerd vanaf de command line.'
+    'Script bron geforceerd vanaf de command line.',
+    'La fuente del script ha sido forzada desde la linea de comandos.'
   );
 
   sDefault: array[TLanguage] of String = (
@@ -145,7 +154,8 @@ const
     'За замовчуванням',
     'Alapértelmezett',
     'Oletusasetukset',
-    'Standaard'
+    'Standaard',
+    'Por defecto'
   );
 
   sStable: array[TLanguage] of String = (
@@ -157,7 +167,8 @@ const
     'Стабільна',
     'Stabil',
     'Vakaa',
-    'Stable'
+    'Stable',
+    'Estable'
   );
 
   siWarning: array[TLanguage] of String = (
@@ -169,7 +180,8 @@ const
     'Якщо Ви вперше інсталюєте XVM і не знаете як це робити, залиште всі'+#13#10+'налаштування як є і натисніть кнопку "Інсталювати / Оновити".',
     'Ha most telepítesz először XVM-et, vagy nem tudod, mit változtatnak ezek a'+#13#10+'beállítások, ne módosíts rajtuk, hanem kattints közvetlenül a "Telepítés / Frissítés"-re.',
     'Jos tämä on ensimmäinen kerta, kun asennat XVM:modia ja et tiedä valintojen'+#13#10+'merkitystä, kannattaa valita "Asenna / Päivitä".',
-    'Als dit de eerste keer is dat u XVM installeert of u weet niet wat de betekenis van deze'+#13#10+'opties is, laat deze dan voor wat ze zijn en klik meteen op "Installeer / Update".'
+    'Als dit de eerste keer is dat u XVM installeert of u weet niet wat de betekenis van deze'+#13#10+'opties is, laat deze dan voor wat ze zijn en klik meteen op "Installeer / Update".',
+    'Si es la primera vez que instalas XVM o no sabes que significan estas opciones,'+#13#10+'dejalas como están y pulsa directamente en "Instalar / Actualizar".'
   );
 
   siOptions: array[TLanguage] of String = (
@@ -181,7 +193,8 @@ const
     'Налаштування:',
     'Beállítások:',
     'Valinnat:',
-    'Opties:'
+    'Opties:',
+    'Opciones:'
   );
 
   siProgress: array[TLanguage] of String = (
@@ -193,7 +206,8 @@ const
     'Процес:',
     'Folyamat:',
     'Edistyminen:',
-    'Voortgang:'
+    'Voortgang:',
+    'Progreso:'
   );
 
   siInstallUpdate: array[TLanguage] of String = (
@@ -205,7 +219,8 @@ const
     'Інсталювати / Оновити',
     'Telepítés / Frissítés',
     'Asenna / Päivitä',
-    'Installeer / Update'
+    'Installeer / Update',
+    'Instalar / Actualizar'
   );
 
   siModify: array[TLanguage] of String = (
@@ -217,7 +232,8 @@ const
     'Змінити',
     'Tallózás',
     'Muokkaa',
-    'Bewerken'
+    'Bewerken',
+    'Modificar'
   );
 
   siKeepConfig: array[TLanguage] of String = (
@@ -229,7 +245,8 @@ const
     'Залишити старий файл конфігурації XVM',
     'Előző XVM konfigurációs fájl megtartása',
     'Pidä vanhat XVM asetustiedot',
-    'Oude XVM configuratie behouden'
+    'Oude XVM configuratie behouden',
+    'Guardar la configuración actual de XVM'
   );
 
   siXVMversion: array[TLanguage] of String = (
@@ -241,7 +258,8 @@ const
     'XVM версія: ',
     'XVM verzió: ',
     'XVM versio: ',
-    'XVM versie: '
+    'XVM versie: ',
+    'Version de XVM: '
   );
 
   siConfig: array[TLanguage] of String = (
@@ -253,7 +271,8 @@ const
     'Конфігурація: ',
     'Konfiguráció: ',
     'Asetukset: ',
-    'Configuratie: '
+    'Configuratie: ',
+    'Configuración: '
   );
 
   siCurrentAction: array[TLanguage] of String = (
@@ -265,7 +284,8 @@ const
     'Зараз виконується: ',
     'Aktuális művelet: ',
     'Tämänhetkinen toimito: ',
-    'Huidige activiteit: '
+    'Huidige activiteit: ',
+    'Acción en curso: '
   );
 
   siForm: array[TLanguage] of String = (
@@ -277,7 +297,8 @@ const
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru]',  // Thanks Recnac_UKR
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. buenonacho94]',
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. Seula]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. jediah.nl]'
+    'XVM Updater '+_VERSION_+' by LaCourgette [tr. jediah.nl]',
+    'XVM Updater '+_VERSION_+' by LaCourgette [tr. Capitán Cable]'
   );
 
 implementation
