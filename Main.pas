@@ -775,7 +775,7 @@ begin
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+
-                'MAY BE UNSTABLE', 'XVM Updater', +mb_OK +mb_ICONWARNING);}
+                'MAY BE UNSTABLE', 'XVM Updater', +mb_OK +mb_ICONWARNING);  }
 
   // AUTO LANGUAGE SELECTION
   // http://msdn.microsoft.com/en-us/library/cc233965.aspx
@@ -788,6 +788,7 @@ begin
   else if (GetUserDefaultLCID and $00FF) = $0E then ChangeLanguage(lngHU)
   else if (GetUserDefaultLCID and $00FF) = $0B then ChangeLanguage(lngFI)
   else if (GetUserDefaultLCID and $00FF) = $13 then ChangeLanguage(lngNL)
+  else if (GetUserDefaultLCID and $00FF) = $0A then ChangeLanguage(lngES)
   else ChangeLanguage(lngEN);
 
   bgLanguage.ItemIndex := Integer(currentLanguage);
