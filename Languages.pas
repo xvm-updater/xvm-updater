@@ -25,7 +25,7 @@ type
   // /!\ Keep the same order in arrays /!\ //
 
 const
-  _VERSION_ = 'v2.8';
+  _VERSION_ = 'v2.9';
   LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl', 'es');
 
   sSelectDirectory: array[TLanguage] of String = (
@@ -37,8 +37,8 @@ const
     'Виберіть каталог з інстальованою грою World of Tanks:',
     'Válaszd ki a World of Tanks telepítési mappáját:',
     'Valitse World of Tanks asennus kansio:',
-    'Selecteer de World of Tanks installatiemap',
-    'Seleccione el directorio de instalación de World of Tanks'
+    'Selecteer de World of Tanks installatiemap:',
+    'Seleccione el directorio de instalación de World of Tanks:'
   );
 
   sFailDirectory: array[TLanguage] of String = (
@@ -293,7 +293,7 @@ const
     'XVM Updater '+_VERSION_+' par LaCourgette',
     'XVM Updater '+_VERSION_+' von LaCourgette [tr. Exekutive]',
     'XVM Updater '+_VERSION_+' by LaCourgette [tł. pokapokami]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR, M_r_A
+    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru]',  // Thanks Recnac_UKR
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. buenonacho94]',
     'XVM Updater '+_VERSION_+' by LaCourgette [tr. Seula]',
