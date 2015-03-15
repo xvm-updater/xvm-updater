@@ -119,6 +119,8 @@ begin
 
           bChangeDirectory.Enabled := true;
           cbKeepConfig.Enabled := true;
+          cbShowWinChances.Enabled := true;
+          cbEnableStatsDisplay.Enabled := true;
           if (cmbConfig.Items.Count > 1) and (not cbKeepConfig.Checked) then cmbConfig.Enabled := true;
           if cmbXVMversion.Items.Count > 1 then cmbXVMversion.Enabled := true;
         end;

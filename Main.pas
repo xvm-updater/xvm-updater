@@ -42,10 +42,12 @@ type
     eDirectory: TEdit;
     bChangeDirectory: TButton;
     bProcess: TButton;
+    cbShowWinChances: TCheckBox;
     lXVMversion: TLabel;
     cmbXVMVersion: TComboBox;
     lConfig: TLabel;
     cmbConfig: TComboBox;
+    cbEnableStatsDisplay: TCheckBox;
     bgLanguage: TButtonGroup;
     ilLanguages: TImageList;
     gbProgress: TGroupBox;
@@ -148,6 +150,8 @@ begin
   // Disable controls on main form
   bChangeDirectory.Enabled := false;
   cbKeepConfig.Enabled := false;
+  cbShowWinChances.Enabled := false;
+  cbEnableStatsDisplay.Enabled := false;
   bProcess.Enabled := false;
   cmbConfig.Enabled := false;
   cmbXVMversion.Enabled := false;
@@ -211,6 +215,8 @@ begin
   // Re-enable main form controls
   bChangeDirectory.Enabled := true;
   cbKeepConfig.Enabled := true;
+  cbShowWinChances.Enabled := true;
+  cbEnableStatsDisplay.Enabled := true;
   bProcess.Enabled := true;
 
   if (cmbConfig.Items.Count > 1) and (not cbKeepConfig.Checked) then
@@ -265,6 +271,10 @@ begin
   // OPTIONS:
   Data^ := StringReplace(Data^, 'OPTIONsaveConfig',
     IntToStr(Integer(cbKeepConfig.Checked)), [rfReplaceAll]);
+  Data^ := StringReplace(Data^, 'OPTIONshowWinChances',
+    IntToStr(Integer(cbShowWinChances.Checked)), [rfReplaceAll]);
+  Data^ := StringReplace(Data^, 'OPTIONenableStats',
+    IntToStr(Integer(cbEnableStatsDisplay.Checked)), [rfReplaceAll]);
   Data^ := StringReplace(Data^, 'OPTIONcustomConfig',
     IntToStr(Integer((cmbConfig.ItemIndex > 0) and (not cbKeepConfig.Checked))), [rfReplaceAll]);
 
@@ -470,6 +480,46 @@ begin
                     end;
 
                   pbCurrentAction.Style := pbstNormal;
+                end;
+            end
+
+          // CONFIG_SWC: enables win chances display in XVM configuration.
+          // EX:
+          //   CONFIG_SWC C:\XVM.xvmconf
+          else if (AnsiLeftStr(Buffer, 10) = 'CONFIG_SWC') then
+
+            begin
+              LineBuffer := ReadLine(Data, @Position);
+              if Execute then
+                begin
+                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  if FileExists(LineBuffer) then
+                    begin
+                      FileReplaceString(LineBuffer, '"showChances": false',
+                        '"showChances": true');
+                      FileReplaceString(LineBuffer, '"showChances":false',
+                        '"showChances": true');
+                    end;
+                end;
+            end
+
+          // CONFIG_ESD: enables player stats display in XVM configuration.
+          // EX:
+          //   CONFIG_ESD C:\XVM.xvmconf
+          else if (AnsiLeftStr(Buffer, 10) = 'CONFIG_ESD') then
+
+            begin
+              LineBuffer := ReadLine(Data, @Position);
+              if Execute then
+                begin
+                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  if FileExists(LineBuffer) then
+                    begin
+                      FileReplaceString(LineBuffer, '"showPlayersStatistics": false',
+                        '"showPlayersStatistics": true');
+                      FileReplaceString(LineBuffer, '"showPlayersStatistics":false',
+                      '"showPlayersStatistics": true');
+                    end;
                 end;
             end
 
@@ -712,8 +762,10 @@ begin
   lCurrentAction.Caption := siCurrentAction[currentLanguage];
   bProcess.Caption := siInstallUpdate[currentLanguage];
   fWindow.Caption := siForm[currentLanguage];
+  cbShowWinChances.Caption := siShowWinChances[currentLanguage];
   lXVMversion.Caption := siXVMversion[currentLanguage];
   lConfig.Caption := siConfig[currentLanguage];
+  cbEnableStatsDisplay.Caption := siEnableStats[currentLanguage];
 
   cmbXVMversion.Left := 114 + (lXVMversion.Width - 96);
   lConfig.Left := 265 - (lConfig.Width - 88);
@@ -775,7 +827,7 @@ begin
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+
-                'MAY BE UNSTABLE', 'XVM Updater', +mb_OK +mb_ICONWARNING);  }
+                'MAY BE UNSTABLE', 'XVM Updater', +mb_OK +mb_ICONWARNING);}
 
   // AUTO LANGUAGE SELECTION
   // http://msdn.microsoft.com/en-us/library/cc233965.aspx
@@ -788,7 +840,6 @@ begin
   else if (GetUserDefaultLCID and $00FF) = $0E then ChangeLanguage(lngHU)
   else if (GetUserDefaultLCID and $00FF) = $0B then ChangeLanguage(lngFI)
   else if (GetUserDefaultLCID and $00FF) = $13 then ChangeLanguage(lngNL)
-  else if (GetUserDefaultLCID and $00FF) = $0A then ChangeLanguage(lngES)
   else ChangeLanguage(lngEN);
 
   bgLanguage.ItemIndex := Integer(currentLanguage);
