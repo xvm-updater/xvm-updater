@@ -3,9 +3,9 @@ object fWindow: TfWindow
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XVM Updater v2.7 par LaCourgette'
-  ClientHeight = 326
-  ClientWidth = 514
+  Caption = 'XVM Updater v3'
+  ClientHeight = 312
+  ClientWidth = 449
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,142 +17,175 @@ object fWindow: TfWindow
   Scaled = False
   OnCreate = FormCreate
   DesignSize = (
-    514
-    326)
-  PixelsPerInch = 120
+    449
+    312)
+  PixelsPerInch = 96
   TextHeight = 16
-  object lWarning: TLabel
-    AlignWithMargins = True
-    Left = 8
-    Top = 7
-    Width = 481
-    Height = 32
-    Anchors = [akLeft, akTop, akRight]
-    Caption = 
-      'Si vous installez XVM pour la premi'#232're fois ou que vous ne savez' +
-      ' pas '#224' quoi servent'#13#10'ces options, ne modifiez rien et cliquez su' +
-      'r '#39'Installer / Mettre '#224' jour'#39'.'
+  object iDonate: TImage
+    Left = 301
+    Top = 9
+    Width = 140
+    Height = 23
+    Anchors = [akTop, akRight]
+    Picture.Data = {
+      0954506E67496D61676589504E470D0A1A0A0000000D494844520000008C0000
+      00170806000000D961A7BE0000000467414D410000B18F0BFC61050000000970
+      4859730000127200001272015E655BE30000001874455874536F667477617265
+      007061696E742E6E657420342E302E3162E8F67C0000036B4944415478DAED9B
+      CB4F135114877FF7963EA8054AA95028081A09848045EA2B26EACE6724AEDC98
+      B893448D8FC4B8F51F3026249A10C1B8F0B13171A389B8C5C74A23D8AAF80C6A
+      295A8A505B0A9476E678871679D5850B3215EF97CC66EE497A26F972E7CCB9A7
+      0C59502F6E58C59CC5464A4D041837D9C038662EC9CA8614909A8A3325E9A668
+      32C5CFFBE28B43D8E21BEAF51D55301A6E31937D276AB702AEED40E13AC052A2
+      F7E348969BD800107E01F4DD0325638F100F1EE16DFEC1F9210B8451BB36AE47
+      716D3B5BB7ED00D6EE1692948A08F6773F2AF9F75112C0E053D09B07DD18F19D
+      E6C77A3FCE2EFDB641BD226471375E62F5FB5B51D10218CC7AA72DD19BD01BD0
+      EBBBF7107A716E569A1961D40E8F1B8E9A2ED670701F2AC56B8819F44E55922B
+      84DF825EDDEDC6575F1B3FE31F4C0B737FB78715D5F5A1EEB0D8592C7AA728C9
+      35422F41F1A116BEE5422FA32B0D36B5C8E567DE433528F1E89D9A2417A114D0
+      737900B17E0FA33BDE22B2DA23587B107034E89D9A2457797793D898CFC1D4CE
+      4D84EA32C05E0FB877C97E8B642913DF81600FF0A11F19615C80A91028DB0CD8
+      AAA43492395253C0F073E0E727E04B30234C9523BD6815E238451D63153B0ECF
+      D33B55899E1009592680D17E60EC9DF8324A0081514D182FA1A22013C5D21D5D
+      ADB35B28761AB31D599AC192158D10459906E2DF80D867603C28C4994C2F0DC5
+      C04813A66C5193CE6006591C6979ACA56971F2AC80315FEFA7912C07AA0224C5
+      6E928C0193A3A26611B224C680E9A81084E6E242898C30ABFF50B3885A86F284
+      24DC947E4571D9D05B916852A8E2D3594D8269C702DA958DB0AA09D3422851F4
+      4E59F22FF0C32084B9EA2D824189A0704AEF7424B94CD4224A152A9EE9F492D9
+      F88AD912D530C8025792058540E3E62F60534D99C3C7660FCB37F5C15920C719
+      244B198981E2932DFC84AF77EEB43ADF7A8DAD2EDF8B026D504A4A23C9108F80
+      86830F319E68E3279F0716CEC3143B2FB18ABA56D82B64B75722EA961068D07F
+      1F3F47CEF1E37D1FB45B0B27EE3A9A6B612F6F676B3CFB51DA288A1C93DE294B
+      F4405581C800E8E3936E840367F929DFFBD9A5A533BD9D4D953097DC6646EB4E
+      34EE015C5E11256764FE1BA203C0B3EB204BE43182D123FCE4EBC0FCE5ACC58A
+      7A63C32AA63023299600E3469BAC69FE1FA8CC1C67C3E14A327C4FF2A3A125FF
+      1AF805380F2A1AD09A1FF60000000049454E44AE426082}
+    ExplicitLeft = 326
+  end
+  object lDonate: TLabel
+    Left = 301
+    Top = 12
+    Width = 140
+    Height = 16
+    Alignment = taCenter
+    Anchors = [akTop, akRight]
+    AutoSize = False
+    Caption = 'Faire un don'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = [fsUnderline]
+    Font.Color = clBlack
+    Font.Height = -15
+    Font.Name = 'Arial'
+    Font.Style = [fsBold, fsItalic]
     ParentFont = False
+    ExplicitLeft = 326
+  end
+  object lCourgette: TLabel
+    Left = 8
+    Top = 282
+    Width = 69
+    Height = 16
+    Caption = 'LaCourgette'
   end
   object gbOptions: TGroupBox
     Left = 8
-    Top = 47
-    Width = 497
-    Height = 155
+    Top = 38
+    Width = 433
+    Height = 140
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Options : '
     TabOrder = 0
+    ExplicitWidth = 458
     DesignSize = (
-      497
-      155)
+      433
+      140)
     object lXVMversion: TLabel
       Left = 16
-      Top = 122
+      Top = 107
       Width = 92
       Height = 16
       Anchors = [akLeft, akBottom]
       Caption = 'Version d'#39'XVM :'
     end
-    object lConfig: TLabel
-      Left = 264
-      Top = 122
-      Width = 85
-      Height = 16
-      Anchors = [akRight, akBottom]
-      Caption = 'Configuration :'
-    end
     object cbKeepConfig: TCheckBox
       Left = 16
-      Top = 95
-      Width = 465
+      Top = 78
+      Width = 401
       Height = 17
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Garder l'#39'ancienne configuration d'#39'XVM'
       TabOrder = 0
-      OnClick = cbKeepConfigClick
-    end
-    object eDirectory: TEdit
-      Left = 16
-      Top = 24
-      Width = 348
-      Height = 24
-      Anchors = [akLeft, akTop, akRight]
-      Enabled = False
-      TabOrder = 1
-    end
-    object bChangeDirectory: TButton
-      Left = 370
-      Top = 23
-      Width = 111
-      Height = 26
-      Anchors = [akTop, akRight]
-      Caption = 'Modifier'
-      TabOrder = 2
-      OnClick = bChangeDirectoryClick
-    end
-    object cbShowWinChances: TCheckBox
-      Left = 16
-      Top = 75
-      Width = 465
-      Height = 17
-      Anchors = [akLeft, akTop, akRight]
-      Caption = 'Afficher les chances de victoire en jeu'
-      TabOrder = 3
+      ExplicitWidth = 426
     end
     object cmbXVMVersion: TComboBox
       Left = 114
-      Top = 118
+      Top = 103
       Width = 134
       Height = 24
       Style = csDropDownList
       Anchors = [akLeft, akBottom]
       Enabled = False
-      TabOrder = 4
+      TabOrder = 1
       OnChange = cmbXVMVersionChange
-    end
-    object cmbConfig: TComboBox
-      Left = 354
-      Top = 118
-      Width = 127
-      Height = 24
-      Style = csDropDownList
-      Anchors = [akRight, akBottom]
-      Enabled = False
-      TabOrder = 5
     end
     object cbEnableStatsDisplay: TCheckBox
       Left = 16
       Top = 55
-      Width = 465
+      Width = 401
       Height = 17
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Activer l'#39'affichage des statistiques des joueurs'
       Checked = True
       State = cbChecked
-      TabOrder = 6
+      TabOrder = 2
+      ExplicitWidth = 426
+    end
+    object cbInstallations: TComboBox
+      Left = 16
+      Top = 24
+      Width = 401
+      Height = 24
+      Style = csDropDownList
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 3
+      OnChange = cbInstallationsChange
+      ExplicitWidth = 426
+    end
+    object bMoreOptions: TButton
+      Left = 295
+      Top = 103
+      Width = 122
+      Height = 25
+      Anchors = [akRight, akBottom]
+      Caption = 'Plus d'#39'options...'
+      TabOrder = 4
+      ExplicitLeft = 320
     end
   end
   object bProcess: TButton
-    Left = 316
-    Top = 293
-    Width = 190
+    Left = 247
+    Top = 279
+    Width = 194
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Installer / Mettre '#224' jour'
+    DropDownMenu = pmProcess
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Style = bsSplitButton
     TabOrder = 1
     OnClick = bProcessClick
+    ExplicitLeft = 272
+    ExplicitTop = 284
   end
   object bgLanguage: TButtonGroup
     Left = 8
-    Top = 293
+    Top = 9
     Width = 241
     Height = 25
-    Anchors = [akLeft, akBottom]
     BorderStyle = bsNone
     ButtonHeight = 25
     ButtonWidth = 26
@@ -189,41 +222,23 @@ object fWindow: TfWindow
     TabOrder = 2
     OnButtonClicked = bgLanguageButtonClicked
   end
-  object gbProgress: TGroupBox
+  object GroupBox1: TGroupBox
     Left = 8
-    Top = 208
-    Width = 497
-    Height = 78
+    Top = 180
+    Width = 433
+    Height = 90
     Anchors = [akLeft, akTop, akRight]
-    Caption = 'Progression : '
+    Caption = 'Configuration :'
     TabOrder = 3
-    DesignSize = (
-      497
-      78)
-    object lCurrentAction: TLabel
-      Left = 16
-      Top = 53
-      Width = 97
-      Height = 16
-      Caption = 'Action en cours :'
-    end
-    object pbCurrentAction: TProgressBar
-      Left = 16
-      Top = 22
-      Width = 465
-      Height = 25
-      Anchors = [akLeft, akTop, akRight]
-      Smooth = True
-      TabOrder = 0
-    end
+    ExplicitWidth = 458
   end
   object ilLanguages: TImageList
     ColorDepth = cd24Bit
     Height = 11
-    Left = 280
-    Top = 288
+    Left = 200
+    Top = 285
     Bitmap = {
-      494C01010900C001280110000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
+      494C010109000D00040010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000210000000100180000000000C018
       0000000000000000000000000000000000007A00007400006E00006A00006400
       005E00005A00005600005000004C00004600004200004000003C00003A00003C
@@ -435,5 +450,19 @@ object fWindow: TfWindow
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000}
+  end
+  object pmProcess: TPopupMenu
+    AutoPopup = False
+    MenuAnimation = [maTopToBottom]
+    Left = 160
+    Top = 283
+    object miInstallUpdate: TMenuItem
+      Caption = 'Installer / Mettre '#224' jour'
+      OnClick = miInstallUpdateClick
+    end
+    object miApplyOptions: TMenuItem
+      Caption = 'Appliquer les options'
+      OnClick = miApplyOptionsClick
+    end
   end
 end

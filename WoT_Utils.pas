@@ -33,13 +33,12 @@ type
 function GetVersion(FileName: String):String;
 procedure GetSubDirectories(const directory: String; List: TStringList);
 function GetDesktop:String;
-function GetStartMenu:String;
+function GetStartMenuPrograms:String;
 function GetShortcutTarget(FileName: String):String;
 
 procedure FCopy(source: String; destination: String);
 function DeleteDirectory(Dir: String):Boolean;
 procedure ExecuteAndWait(Filename, Parameters: String; Application: TApplication);
-function ProcessExists(exeFileName: String):Boolean;
 function IsDriveReady(Root: String):Boolean;
 
 function StrSplit(Source: String):TStringArray;
@@ -162,6 +161,15 @@ begin
 end;
 
 
+function GetStartMenuPrograms:String;
+begin
+  SetLength(Result, MAX_PATH);
+  SHGetFolderPath(0, CSIDL_PROGRAMS, 0, SHGFP_TYPE_CURRENT, PChar(Result));
+  SetLength(Result, StrLen(PChar(Result)));
+  // Can't fail.
+end;
+
+
 function GetShortcutTarget(FileName: String):String;
 var
   ShellLink: IShellLink;
@@ -219,34 +227,6 @@ begin
 end;
 
 
-function ProcessExists(exeFileName: String):Boolean;
-var
-  ContinueLoop: BOOL;
-  FSnapshotHandle: THandle;
-  FProcessEntry32: TProcessEntry32;
-begin
-  try
-    FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
-    ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
-    Result := False;
-    while Integer(ContinueLoop) <> 0 do
-    begin
-      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) =
-        UpperCase(ExeFileName)) or (UpperCase(FProcessEntry32.szExeFile) =
-        UpperCase(ExeFileName))) then
-      begin
-        Result := True;
-      end;
-      ContinueLoop := Process32Next(FSnapshotHandle, FProcessEntry32);
-    end;
-    CloseHandle(FSnapshotHandle);
-  except
-    Result := False; // Fail silently & allow processing.
-  end;
-end;
-
-
 procedure FileReplaceString(const FileName, SearchString, ReplaceString: String);
 var
   fs: TFileStream;
@@ -273,24 +253,6 @@ begin
   except
     // Fail & continue silently.
   end;
-end;
-
-
-function GetStartMenu:String;
-  procedure FreePidl(pidl: PItemIDList);
-  var
-    allocator: IMalloc;
-  begin
-    if Succeeded(SHGetMalloc(allocator)) then allocator.Free(pidl);
-  end;
-var
-  pidl: PItemIDList;
-  buf: array[0..MAX_PATH] of Char;
-begin
-  if Succeeded(SHGetSpecialFolderLocation(0, CSIDL_STARTMENU, pidl)) then
-  SHGetPathFromIDList(pidl, buf);
-  Result := StrPas(buf);
-  FreePIDL(pidl);
 end;
 
 

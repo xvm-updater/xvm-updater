@@ -22,60 +22,70 @@ interface
 
 uses
   Windows, SysUtils, Classes, IOUtils, Forms, FileCtrl, StrUtils, Controls,
-  WoT_Utils, Masks, Languages, ImgList, ButtonGroup, DLThread, AbUnZper,
-  AbArcTyp, ComCtrls, StdCtrls;
-// Note: I'm using a customized version of ButtonGroup.pas, allowing me to not
-//   display the ugly focus rectangle of the TButtonGroup component. However,
+  WoT_Utils, Languages, ImgList, DLThread, AbUnZper, AbArcTyp, Math,
+  ComCtrls, StdCtrls, ProgressStatus, Menus, Masks, DetectionThread, pngimage,
+  ExtCtrls, ButtonGroup;
+// Note: I'm using a customized version of StdCtrls.pas, allowing me to not
+//   display the ugly focus rectangle of the TComboBox component. However,
 //   I can't share the modified source code according to Embarcadero's license.
-//   Simply put { ... } around FFocusIndex handler in Paint event or use my
-//   compiled version (ButtonGroup.dcu).
+//   Simply comment this line in TCustomComboBox.CNDrawItem:
+//      if odFocused in State then DrawFocusRect(hDC, rcItem);
+//   and change the previous if by:
+//      if (Integer(itemID) >= 0) and (odSelected in State) and not(odComboBoxEdit in State) then
+//   or use my compiled version (StdCtrls.dcu).
 
-// No declaration of this function in Windows unit, strange.
+// No declaration of this function in the Windows unit, strange.
 function GetLongPathName(ShortPathName: PChar; LongPathName: PChar;
   cchBuffer: Integer): Integer; stdcall; external kernel32 name 'GetLongPathNameW';
 
 type
+  TProcessMode = (pmInstallUpdate, pmApplyOptions);
+
   TfWindow = class(TForm)
-    lWarning: TLabel;
+    bgLanguage: TButtonGroup;
     gbOptions: TGroupBox;
     cbKeepConfig: TCheckBox;
-    eDirectory: TEdit;
-    bChangeDirectory: TButton;
     bProcess: TButton;
-    cbShowWinChances: TCheckBox;
     lXVMversion: TLabel;
     cmbXVMVersion: TComboBox;
-    lConfig: TLabel;
-    cmbConfig: TComboBox;
     cbEnableStatsDisplay: TCheckBox;
-    bgLanguage: TButtonGroup;
     ilLanguages: TImageList;
-    gbProgress: TGroupBox;
-    lCurrentAction: TLabel;
-    pbCurrentAction: TProgressBar;
+    pmProcess: TPopupMenu;
+    miInstallUpdate: TMenuItem;
+    miApplyOptions: TMenuItem;
+    cbInstallations: TComboBox;
+    iDonate: TImage;
+    lDonate: TLabel;
+    bMoreOptions: TButton;
+    GroupBox1: TGroupBox;
+    lCourgette: TLabel;
     procedure FormCreate(Sender: TObject);
-    procedure bChangeDirectoryClick(Sender: TObject);
     procedure bProcessClick(Sender: TObject);
-    procedure cbKeepConfigClick(Sender: TObject);
-    procedure bgLanguageButtonClicked(Sender: TObject; Index: Integer);
     procedure cmbXVMVersionChange(Sender: TObject);
+    procedure miInstallUpdateClick(Sender: TObject);
+    procedure miApplyOptionsClick(Sender: TObject);
+    procedure cbInstallationsChange(Sender: TObject);
+    procedure bgLanguageButtonClicked(Sender: TObject; Index: Integer);
   private
     DLThread: TDLThread;
+    DetectionThread: TDetectionThread;
     VersionsFiles, ConfigsFiles: TStringList;
     WOTDir: String;
     Version: String;
     CustomScript: String;
     LastNightlyRev: String;
+    ProcessMode: TProcessMode;
+    PreviousItem: Integer;
     function Replace(Data: PString; Version: String):Boolean;
     procedure UnzipProgress(Sender: TObject; Progress: Byte; var Abort: Boolean);
     function Parse(Data: String; Execute: Boolean):Integer;
-    procedure SetVersion;
     procedure UpdateVersions(Data: TMemoryStream);
-    procedure UpdateConfigs(Data: TMemoryStream);
     procedure UpdateNightlyRev(Data: TMemoryStream);
     procedure ChangeLanguage(NewLng: TLanguage);
   public
     currentLanguage: TLanguage;
+    Status: TProgressStatus;
+    procedure SetVersion(Path: String);
   end;
 
 var
@@ -86,38 +96,35 @@ implementation
 {$R *.dfm}
 
 
-procedure TfWindow.bChangeDirectoryClick(Sender: TObject);
-var
-  chosenDirectory: String;
-  okDir: Boolean;
+procedure TfWindow.SetVersion(Path: String);
 begin
-  okDir := false;
-  repeat
-    if SelectDirectory(sSelectDirectory[currentLanguage], '', chosenDirectory) then
-      begin
-        if FileExists(chosenDirectory+'\worldoftanks.exe') then
-          begin
-            WOTDir := chosenDirectory;
-            okDir := true;
-            SetVersion;
-          end
-        else
-          if MessageBox(0, PChar(sFailDirectory[currentLanguage]), 'XVM Updater', +mb_YESNO +mb_ICONWARNING) = 7 then
-            okDir := true;
-      end
-    else okDir := true;
-  until okDir;
+  WOTDir := Path;
+  cbInstallations.ItemIndex := cbInstallations.Items.IndexOf(Path);
+  PreviousItem := cbInstallations.ItemIndex;
+  Version := GetVersion(WOTDir + '\worldoftanks.exe');
+  //TDLThread.Create(
+  //  'http://edgar-fournival.fr/obj/wotxvm/xvm-versions?version='+Version,
+  //  UpdateVersions);
 end;
 
 
-procedure TfWindow.SetVersion;
+procedure TfWindow.miApplyOptionsClick(Sender: TObject);
 begin
-  eDirectory.Text := WOTDir;
-  Version := GetVersion(WOTDir+'\worldoftanks.exe');
-  TDLThread.Create(
-    'http://edgar-fournival.fr/obj/wotxvm/xvm-versions?version='+Version,
-    UpdateVersions);
-  LastNightlyRev := '';
+  ProcessMode := pmApplyOptions;
+  bProcess.Caption := miApplyOptions.Caption;
+end;
+
+
+procedure TfWindow.miInstallUpdateClick(Sender: TObject);
+begin
+  ProcessMode := pmInstallUpdate;
+  bProcess.Caption := miInstallUpdate.Caption;
+end;
+
+
+procedure TfWindow.bgLanguageButtonClicked(Sender: TObject; Index: Integer);
+begin
+  ChangeLanguage(TLanguage(Index));
 end;
 
 
@@ -136,24 +143,13 @@ begin
       Exit;
     end;
 
-  // Check if client is closed
-  if ProcessExists('worldoftanks.exe') then
-    begin
-      MessageBox(0,
-        PChar(sClientRunning[currentLanguage]),
-        'XVM Updater', +mb_OK +mb_ICONINFORMATION);
-      Exit;
-    end;
-
-  pbCurrentAction.State := pbsNormal;
+  Status.SetupControls(Self);
 
   // Disable controls on main form
-  bChangeDirectory.Enabled := false;
+  cbInstallations.Enabled := false;
   cbKeepConfig.Enabled := false;
-  cbShowWinChances.Enabled := false;
   cbEnableStatsDisplay.Enabled := false;
   bProcess.Enabled := false;
-  cmbConfig.Enabled := false;
   cmbXVMversion.Enabled := false;
 
   // We want to download the XVM version corresponding to user's choice
@@ -171,8 +167,6 @@ begin
         ScriptURL := CustomScript;
     end;
 
-  Parse('PERCENT = 00', true);
-
   // If local file as script source isn't forced
   if (Script = '') then
     begin
@@ -181,14 +175,19 @@ begin
         sScriptDownload[currentLanguage], true);
 
       DLThread := TDLThread.Create(ScriptURL, True);
+
       try
         DLThread.Start;
+
         repeat
           Sleep(10);
           Application.ProcessMessages;
         until DLThread.Finished or Application.Terminated;
+
         if Application.Terminated then Exit;
-        SetString(Script, PAnsiChar(DLThread.Data.Memory), DLThread.Data.Size);
+
+        if not(DLThread.Failed) then
+          SetString(Script, PAnsiChar(DLThread.Data.Memory), DLThread.Data.Size);
       finally
         DLThread.Data.Free;
         DLThread.Free;
@@ -198,42 +197,52 @@ begin
   // Process
   if Length(Script) > 0 then
     begin
-      Parse('PERCENT = 05', true);
       Parse('STATUS_'+
         LanguageMin[currentLanguage]+' = '+
         sInformationsCollecting[currentLanguage], true);
 
-      if Replace(@Script, Version) then
-        begin
-          Parse('PERCENT = 10', true);
-          Parse(Script, true);
-          pbCurrentAction.Max := 100;
-          pbCurrentAction.Position := 100;
-        end;
+      if Replace(@Script, Version) then Parse(Script, true);
     end;
 
+  Status.SetProgress(100);
+
   // Re-enable main form controls
-  bChangeDirectory.Enabled := true;
+  cbInstallations.Enabled := true;
   cbKeepConfig.Enabled := true;
-  cbShowWinChances.Enabled := true;
   cbEnableStatsDisplay.Enabled := true;
   bProcess.Enabled := true;
 
-  if (cmbConfig.Items.Count > 1) and (not cbKeepConfig.Checked) then
-    cmbConfig.Enabled := true;
-  if cmbXVMversion.Items.Count > 1 then
-    cmbXVMversion.Enabled := true;
-
-  bProcess.Caption := siInstallUpdate[currentLanguage];
+  if cmbXVMversion.Items.Count > 1 then cmbXVMversion.Enabled := true;
 end;
 
 
-procedure TfWindow.cbKeepConfigClick(Sender: TObject);
+procedure TfWindow.cbInstallationsChange(Sender: TObject);
+var
+  chosenDirectory: String;
+  okDir: Boolean;
 begin
-  if cbKeepConfig.Checked then
-    cmbConfig.Enabled := False
-  else
-    cmbConfig.Enabled := True;
+  if cbInstallations.ItemIndex = cbInstallations.Items.Count-1 then
+    begin
+      cbInstallations.ItemIndex := PreviousItem;
+      okDir := false;
+      repeat
+        if SelectDirectory(sSelectDirectory[currentLanguage], '', chosenDirectory) then
+          begin
+            if FileExists(chosenDirectory + '\worldoftanks.exe') then
+              begin
+                okDir := true;
+                cbInstallations.Items.Insert(cbInstallations.Items.Count-1,
+                                             chosenDirectory);
+                SetVersion(chosenDirectory);
+              end
+            else
+              if MessageBox(0, PChar(sFailDirectory[currentLanguage]), 'XVM Updater', +mb_YESNO +mb_ICONWARNING) = 7 then
+                okDir := true;
+          end
+        else okDir := true;
+      until okDir;
+    end
+  else SetVersion(cbInstallations.Text);
 end;
 
 
@@ -264,24 +273,22 @@ begin
   Data^ := StringReplace(Data^, '%WINDOWS%', WinFolder, [rfReplaceAll]);
 
   // %CUSTOMCONFIG%
-  if (cmbConfig.ItemIndex > 0) then
-    Data^ := StringReplace(Data^, '%CUSTOMCONFIG%',
-      ConfigsFiles[cmbConfig.ItemIndex-1], [rfReplaceAll]);
+  //if (cmbConfig.ItemIndex > 0) then
+  //  Data^ := StringReplace(Data^, '%CUSTOMCONFIG%',
+  //    ConfigsFiles[cmbConfig.ItemIndex-1], [rfReplaceAll]);
 
   // OPTIONS:
   Data^ := StringReplace(Data^, 'OPTIONsaveConfig',
     IntToStr(Integer(cbKeepConfig.Checked)), [rfReplaceAll]);
-  Data^ := StringReplace(Data^, 'OPTIONshowWinChances',
-    IntToStr(Integer(cbShowWinChances.Checked)), [rfReplaceAll]);
   Data^ := StringReplace(Data^, 'OPTIONenableStats',
     IntToStr(Integer(cbEnableStatsDisplay.Checked)), [rfReplaceAll]);
-  Data^ := StringReplace(Data^, 'OPTIONcustomConfig',
-    IntToStr(Integer((cmbConfig.ItemIndex > 0) and (not cbKeepConfig.Checked))), [rfReplaceAll]);
+  //Data^ := StringReplace(Data^, 'OPTIONcustomConfig',
+  //  IntToStr(Integer((cmbConfig.ItemIndex > 0) and (not cbKeepConfig.Checked))), [rfReplaceAll]);
 
   // %WOTOLDVERSION%
   try
     Versions := TStringList.Create;
-    GetSubDirectories(eDirectory.Text+'\res_mods\', Versions);
+    GetSubDirectories(WOTDir + '\res_mods\', Versions);
     Versions.Sort;
     if Versions.Count > 1 then
       Data^ := StringReplace(Data^, '%WOTOLDVERSION%',
@@ -303,7 +310,7 @@ end;
 
 procedure TfWindow.UnzipProgress(Sender: TObject; Progress: Byte; var Abort: Boolean);
 begin
-  pbCurrentAction.Position := Progress;
+  Status.SetProgress(Progress);
   Application.ProcessMessages;
 end;
 
@@ -368,12 +375,10 @@ begin
               if Execute then
                 begin
                   if AnsiRightStr(Buffer, 2) = LanguageMin[currentLanguage] then
-                    lCurrentAction.Caption := siCurrentAction[currentLanguage] +
-                      AnsiRightStr(LineBuffer, Length(LineBuffer)-3)
+                    Status.SetCurrentOperation(AnsiRightStr(LineBuffer, Length(LineBuffer)-3))
                   // Default is english
                   else if AnsiRightStr(Buffer, 2) = LanguageMin[lngEN] then
-                    lCurrentAction.Caption := siCurrentAction[currentLanguage] +
-                      AnsiRightStr(LineBuffer, Length(LineBuffer)-3);
+                    Status.SetCurrentOperation(AnsiRightStr(LineBuffer, Length(LineBuffer)-3));
                 end;
             end
 
@@ -409,18 +414,6 @@ begin
                 end;
             end
 
-          // PERCENT: define the process progression (progress bar position).
-          // EX:
-          //   PERCENT = 50
-          else if (AnsiLeftStr(Buffer, 7) = 'PERCENT') then
-
-            begin
-              LineBuffer := ReadLine(Data, @Position);
-              if Execute then
-                bProcess.Caption := Format('%s (%d%%)',
-                  [siInstallUpdate[currentLanguage], StrToInt(AnsiRightStr(LineBuffer, Length(LineBuffer)-3))]);
-            end
-
           // UNPACK: unzip a specified zipfile in a specified directory.
           // EX:
           //   UNPACK "C:\aaa.zip" "C:\Folder"
@@ -430,7 +423,7 @@ begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  pbCurrentAction.Position := 0;
+                  Status.SetNormal;
                   LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
 
                   Unzipper := TAbUnzipper.Create(nil);
@@ -469,7 +462,7 @@ begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  pbCurrentAction.Style := pbstMarquee;
+                  Status.SetWaiting;
                   LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
                   ExecuteAndWait(StrSplit(LineBuffer)[0], StrSplit(LineBuffer)[1], Application);
 
@@ -479,7 +472,7 @@ begin
                       Exit;
                     end;
 
-                  pbCurrentAction.Style := pbstNormal;
+                  Status.SetNormal;
                 end;
             end
 
@@ -626,6 +619,7 @@ begin
           else
 
             begin
+              // Ignore
               Buffer := '';
               ReadLine(Data, @Position);
             end;
@@ -683,43 +677,6 @@ begin
 end;
 
 
-procedure TfWindow.UpdateConfigs(Data: TMemoryStream);
-var
-  Position: Integer;
-  Line, Versions: String;
-begin
-  SetString(Versions, PAnsiChar(Data.Memory), Data.Size);
-  Position := 1;
-
-  while Position < Length(Versions) do
-    begin
-      Line := '';
-      while ((Versions[Position] <> #10) and
-             (Versions[Position] <> #13) and
-             (Position <= Length(Versions))) do
-        begin
-          Line := Line + Versions[Position];
-          Inc(Position);
-        end;
-      Inc(Position);
-      if Trim(Line) <> '' then
-        begin
-          cmbConfig.Items.Add(StrSplit(Line)[0]);
-          ConfigsFiles.Add(StrSplit(Line)[1]);
-        end;
-    end;
-
-  // Avoid garbage in the menu if HTML code is returned
-  if cmbConfig.Items.Count > 10 then
-    begin
-      cmbConfig.Items.Clear;
-      cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
-    end;
-
-  if cmbConfig.Items.Count > 1 then cmbConfig.Enabled := true;
-end;
-
-
 procedure TfWindow.UpdateNightlyRev(Data: TMemoryStream);
 var
   I: Integer;
@@ -741,12 +698,6 @@ begin
 end;
 
 
-procedure TfWindow.bgLanguageButtonClicked(Sender: TObject; Index: Integer);
-begin
-  ChangeLanguage(TLanguage(Index));
-end;
-
-
 procedure TfWindow.ChangeLanguage(NewLng: TLanguage);
 var
   OldLng: TLanguage;
@@ -754,32 +705,32 @@ begin
   OldLng := currentLanguage;
   currentLanguage := NewLng;
 
-  lWarning.Caption := siWarning[currentLanguage];
   gbOptions.Caption := siOptions[currentLanguage];
   cbKeepConfig.Caption := siKeepConfig[currentLanguage];
-  bChangeDirectory.Caption := siModify[currentLanguage];
-  gbProgress.Caption := siProgress[currentLanguage];
-  lCurrentAction.Caption := siCurrentAction[currentLanguage];
-  bProcess.Caption := siInstallUpdate[currentLanguage];
+  //bChangeDirectory.Caption := siModify[currentLanguage];
+  bProcess.Caption := IfThen(ProcessMode = pmInstallUpdate,
+                         siInstallUpdate[currentLanguage],
+                         siApplyOptions[currentLanguage]);
   fWindow.Caption := siForm[currentLanguage];
-  cbShowWinChances.Caption := siShowWinChances[currentLanguage];
   lXVMversion.Caption := siXVMversion[currentLanguage];
-  lConfig.Caption := siConfig[currentLanguage];
   cbEnableStatsDisplay.Caption := siEnableStats[currentLanguage];
+  miInstallUpdate.Caption := siInstallUpdate[currentLanguage];
+  miApplyOptions.Caption := siApplyOptions[currentLanguage];
+
+  lDonate.Caption := siDonate[currentLanguage];
+  lDonate.Font.Height := IfThen(currentLanguage = lngRU, -10, -14);
+  if currentLanguage = lngUA then lDonate.Font.Height := -13;
+  lDonate.Top := IfThen(currentLanguage = lngRU, iDonate.Top + 5, iDonate.Top + 3);
+
+  cbInstallations.Items.Delete(cbInstallations.Items.Count-1);
+  cbInstallations.Items.Add(siBrowse[currentLanguage]);
 
   cmbXVMversion.Left := 114 + (lXVMversion.Width - 96);
-  lConfig.Left := 265 - (lConfig.Width - 88);
-
-  if cmbConfig.Items[0] = sDefault[OldLng] then
-    begin
-      cmbConfig.Items[0] := sDefault[currentLanguage];
-      if not(cmbConfig.ItemIndex > 0) then cmbConfig.ItemIndex := 0;
-    end;
 
   if cmbXVMversion.Items[0] = sStable[OldLng] then
     begin
       cmbXVMversion.Items[0] := sStable[currentLanguage];
-      if not(cmbConfig.ItemIndex > 0) then cmbXVMversion.ItemIndex := 0;
+      if not(cmbXVMversion.ItemIndex > 0) then cmbXVMversion.ItemIndex := 0;
     end;
 end;
 
@@ -793,37 +744,23 @@ begin
       UpdateNightlyRev);
 end;
 
+
 procedure TfWindow.FormCreate(Sender: TObject);
-const
-  WoT_Dir: array[1..9] of String = (
-      'World_of_Tanks',
-      'World of Tanks',
-      'Games\World_of_Tanks',
-      'Games\World of Tanks',
-      'Program Files (x86)\World_of_Tanks',
-      'Program Files (x86)\World of Tanks',
-      'Program Files\World_of_Tanks',
-      'Program Files\World of Tanks',
-      'World_of_Tanks_closed_Beta'
-    );
 var
-  vDrivesSize: Cardinal;
-  vDrives: array[0..128] of Char;
-  vDrive: PChar;
-  I: Integer;
-  searchResult: TSearchRec;
-  currentSC: String;
-  systemDrive: String;
-  Directory: String;
+  LCode: Cardinal;
 begin
+  LastNightlyRev := '';
+  ProcessMode := pmInstallUpdate;
+  Status := TProgressStatus.Create;
+
+  lDonate.Font.Color := RGB(0, 51, 102); // Paypal original color
+
   // DYNAMIC VERSIONS & CONFIGS LOADING SUPPORT
   VersionsFiles := TStringList.Create;
-  ConfigsFiles := TStringList.Create;
-
   cmbXVMversion.ItemIndex := cmbXVMversion.Items.Add(sStable[currentLanguage]);
-  cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
-  TDLThread.Create('http://edgar-fournival.fr/obj/wotxvm/xvm-configs.php',
-    UpdateConfigs);
+
+  // WOT INSTALLATION FOLDER AUTO-DETECTION
+  DetectionThread := TDetectionThread.Create;
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+
@@ -832,14 +769,15 @@ begin
   // AUTO LANGUAGE SELECTION
   // http://msdn.microsoft.com/en-us/library/cc233965.aspx
   // http://msdn.microsoft.com/en-us/library/dd318135.aspx
-       if (GetUserDefaultLCID and $00FF) = $0C then ChangeLanguage(lngFR)
-  else if (GetUserDefaultLCID and $00FF) = $07 then ChangeLanguage(lngDE)
-  else if (GetUserDefaultLCID and $00FF) = $15 then ChangeLanguage(lngPL)
-  else if (GetUserDefaultLCID and $00FF) = $19 then ChangeLanguage(lngRU)
-  else if (GetUserDefaultLCID and $00FF) = $22 then ChangeLanguage(lngUA)
-  else if (GetUserDefaultLCID and $00FF) = $0E then ChangeLanguage(lngHU)
-  else if (GetUserDefaultLCID and $00FF) = $0B then ChangeLanguage(lngFI)
-  else if (GetUserDefaultLCID and $00FF) = $13 then ChangeLanguage(lngNL)
+  LCode := GetUserDefaultLCID and $00FF;
+       if LCode = $0C then ChangeLanguage(lngFR)
+  else if LCode = $07 then ChangeLanguage(lngDE)
+  else if LCode = $15 then ChangeLanguage(lngPL)
+  else if LCode = $19 then ChangeLanguage(lngRU)
+  else if LCode = $22 then ChangeLanguage(lngUA)
+  else if LCode = $0E then ChangeLanguage(lngHU)
+  else if LCode = $0B then ChangeLanguage(lngFI)
+  else if LCode = $13 then ChangeLanguage(lngNL)
   else ChangeLanguage(lngEN);
 
   bgLanguage.ItemIndex := Integer(currentLanguage);
@@ -854,81 +792,8 @@ begin
         'XVM Updater', +mb_OK +mb_ICONINFORMATION);
     end;
 
-  // WOT INSTALLATION FOLDER AUTO-DETECTION
-
-  // Checking global Start menu shortcut (fast)
-  try
-    GetDir(0, systemDrive);
-    if FileExists(systemDrive[1]+':\ProgramData\Microsoft\Windows\Start Menu\Programs\World of Tanks\World of tanks.lnk') then
-      begin
-        Directory := ExtractFileDir(
-          GetShortcutTarget(
-            systemDrive[1]+':\ProgramData\Microsoft\Windows\Start Menu\Programs\World of Tanks\World of tanks.lnk'));
-        if FileExists(Directory + '\worldoftanks.exe') then
-          begin
-            WOTDir := Directory;
-            SetVersion;
-            Exit;
-          end;
-      end;
-  except
-    // Fail silently.
-  end;
-
-  // Checking desktop shortcut linking to "worldoftanks.exe" or "xvm-stat.exe" (slow)
-  try
-    if FindFirst(GetDesktop+'\'+'*.lnk', faAnyFile, searchResult) = 0 then
-      begin
-        repeat
-          CurrentSC := GetShortcutTarget(GetDesktop+'\'+searchResult.Name);
-          if MatchesMask(CurrentSC, '*WorldOfTanks.exe') or
-             MatchesMask(CurrentSC, '*xvm-stat.exe') or
-             MatchesMask(CurrentSC, '*WOTLauncher.exe') then
-            begin
-              Directory := ExtractFileDir(CurrentSC);
-              if FileExists(Directory + '\worldoftanks.exe') then
-                begin
-                  WOTDir := Directory;
-                  SetVersion;
-                  Exit;
-                end;
-            end;
-        until FindNext(searchResult) <> 0;
-        SysUtils.FindClose(searchResult);
-      end;
-  except
-    // Fail silently.
-  end;
-
-  // Checking known directories on each disk (slower)
-  try
-    vDrivesSize := GetLogicalDriveStrings(SizeOf(vDrives), vDrives);
-    if vDrivesSize = 0 then Exit;
-
-    vDrive := vDrives;
-    while vDrive^ <> #0 do
-      begin
-        if IsDriveReady(vDrive) then
-          begin
-            for I := 1 to Length(WoT_Dir) do
-              begin
-                if DirectoryExists(StrPas(vDrive)+WoT_Dir[I]+'\') then
-                  begin
-                    Directory := StrPas(vDrive)+WoT_Dir[I];
-                    if FileExists(Directory + '\worldoftanks.exe') then
-                      begin
-                        WOTDir := Directory;
-                        SetVersion;
-                        Exit;
-                      end;
-                  end;
-              end;
-          end;
-        Inc(vDrive, SizeOf(vDrive));
-      end;
-  except
-    // Fail silently.
-  end;
+  // Wait before starting up, we need to detect at least one WoT installation
+  while not(DetectionThread.Finished or DetectionThread.InstallationFound) do Sleep(10);
 end;
 
 end.

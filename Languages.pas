@@ -25,7 +25,7 @@ type
   // /!\ Keep the same order in arrays /!\ //
 
 const
-  _VERSION_ = 'v2.7';
+  _VERSION_ = 'v3';
   LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl');
 
   sSelectDirectory: array[TLanguage] of String = (
@@ -62,18 +62,6 @@ const
     'Nem sikerült megtalálni a World of Tanks telepítési mappáját.'+#13#10+'Kérlek, válaszd ki manuálisan.',
     'World of Tanks asennus kansiota ei löydy.'+#13#10+'Ole hyvä ja kirjoita kansio.',
     'Geen World of Tanks installatie gevonden.'+#13#10+'Geef het handmatig op.'
-  );
-
-  sClientRunning: array[TLanguage] of String = (
-    'Please exit World of Tanks client before proceeding'+#13#10+'to XVM installation or update.',
-    'Merci d''arrêter World of Tanks avant de procéder'+#13#10+'à l''installation ou la mise à jour d''XVM.',
-    'Bitte schließe World of Tanks um mit'+#13#10+'der XVM Installation/Update fortzufahren.',
-    'Wyłącz grę oraz zamknij klienta gry, zanim przejdziesz'+#13#10+'do instalacji lub aktualizacji XVM.',
-    'Пожалуйста, закройте клиент World of Tanks до начала установки'+#13#10+'или обновления XVM.',
-    'Будьласка, вийдіть з World of Tanks для, встановлення'+#13#10+'чи оновлення XVM.',
-    'Kérlek, zárd be a World of Tanks klienst,'+#13#10+'mielőtt megkezdenéd az XVM telepítését vagy frissítését.',
-    'Ole hyvä ja poistu World of Tanks pelistä ennen'+#13#10+'XVM asenusta, tai päivitystä',
-    'Sluit de World of Tanks client voordat u verder gaat'+#13#10+'met het installeren of updaten van XVM.'
   );
 
   sFailModsDir: array[TLanguage] of String = (
@@ -160,18 +148,6 @@ const
     'Stable'
   );
 
-  siWarning: array[TLanguage] of String = (
-    'If this is the first time you install XVM or you don''t know the meaning of these options,'+#13#10+'please leave them as they currently are and click directly on "Install / Update".',
-    'Si vous installez XVM pour la première fois ou que vous ne savez pas à quoi servent'+#13#10+'ces options, ne modifiez rien et cliquez sur "Installer / Mettre à jour".',
-    'Wenn dies das erste Mal ist, dass du XVM installierst oder nicht weißt, was die'+#13#10+'Optionen bewirken, lasse diese wie sie sind und klicke direkt auf ''Installieren / Updaten''.',
-    'Jeśli po raz pierwszy instalujesz XVM lub nie znasz znaczenia poniższych opcji,'+#13#10+'pozostaw domyślne ustawienia i kliknij bezpośrednio "Instaluj / Aktualizuj".',
-    'Если вы устанавливаете XVM в первый раз или не знаете назначения этих'+#13#10+'настроек, оставьте их как есть и нажмите "Установить / Обновить".',
-    'Якщо Ви вперше інсталюєте XVM і не знаете як це робити, залиште всі'+#13#10+'налаштування як є і натисніть кнопку "Інсталювати / Оновити".',
-    'Ha most telepítesz először XVM-et, vagy nem tudod, mit változtatnak ezek a'+#13#10+'beállítások, ne módosíts rajtuk, hanem kattints közvetlenül a "Telepítés / Frissítés"-re.',
-    'Jos tämä on ensimmäinen kerta, kun asennat XVM:modia ja et tiedä valintojen'+#13#10+'merkitystä, kannattaa valita "Asenna / Päivitä".',
-    'Als dit de eerste keer is dat u XVM installeert of u weet niet wat de betekenis van deze'+#13#10+'opties is, laat deze dan voor wat ze zijn en klik meteen op "Installeer / Update".'
-  );
-
   siOptions: array[TLanguage] of String = (
     'Options:',
     'Options :',
@@ -208,16 +184,28 @@ const
     'Installeer / Update'
   );
 
-  siModify: array[TLanguage] of String = (
-    'Modify',
-    'Modifier',
-    'Wechseln',
-    'Zmień',
-    'Изменить',
-    'Змінити',
-    'Tallózás',
-    'Muokkaa',
-    'Bewerken'
+  siApplyOptions: array[TLanguage] of String = (
+    'Apply options only',
+    'Appliquer les options',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#'
+  );
+
+  siBrowse: array[TLanguage] of String = (
+    'Browse...',
+    'Parcourir...',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#',
+    '#TODO#'
   );
 
   siKeepConfig: array[TLanguage] of String = (
@@ -230,18 +218,6 @@ const
     'Előző XVM konfigurációs fájl megtartása',
     'Pidä vanhat XVM asetustiedot',
     'Oude XVM configuratie behouden'
-  );
-
-  siShowWinChances: array[TLanguage] of String = (
-    'Show win chances in game',
-    'Afficher les chances de victoire en jeu',
-    'Zeige die Gewinn-chance im Spiel',
-    'Pokazuj procent szans na zwycięstwo podczas bitwy',
-    'Показывать шансы на победу',
-    'Показувати шанси на виграш',
-    'Győzelmi esélyek mutatása a játékban',
-    'Näytä voittomahdollisuus pelissä',
-    'Toon win kansen in het spel'
   );
 
   siEnableStats: array[TLanguage] of String = (
@@ -280,28 +256,28 @@ const
     'Configuratie: '
   );
 
-  siCurrentAction: array[TLanguage] of String = (
-    'Current action: ',
-    'Action en cours : ',
-    'Wird bearbeitet: ',
-    'Trwa: ',
-    'Текущая операция: ',
-    'Зараз виконується: ',
-    'Aktuális művelet: ',
-    'Tämänhetkinen toimito: ',
-    'Huidige activiteit: '
+  siDonate: array[TLanguage] of String = (
+    'Donate',
+    'Faire un don',
+    'Spenden',
+    'Przekaź darowiznę',
+    'Сделать пожертвование',
+    'Зробити пожертву',
+    '#TODO#',
+    '#TODO#',
+    'Doneren'
   );
 
   siForm: array[TLanguage] of String = (
-    'XVM Updater '+_VERSION_+' by LaCourgette', // Thanks blademansw
-    'XVM Updater '+_VERSION_+' par LaCourgette',
-    'XVM Updater '+_VERSION_+' von LaCourgette [tr. Exekutive]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tł. pokapokami]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR, M_r_A
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru]',  // Thanks Recnac_UKR
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. buenonacho94]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. Seula]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. jediah.nl]'
+    'XVM Updater '+_VERSION_, // Thanks blademansw
+    'XVM Updater '+_VERSION_,
+    'XVM Updater '+_VERSION_+' [tr. Exekutive]',
+    'XVM Updater '+_VERSION_+' [tł. pokapokami]',
+    'XVM Updater '+_VERSION_+' [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR
+    'XVM Updater '+_VERSION_+' [tr. wot-ka.ru]',  // Thanks Recnac_UKR
+    'XVM Updater '+_VERSION_+' [tr. buenonacho94]',
+    'XVM Updater '+_VERSION_+' [tr. Seula]',
+    'XVM Updater '+_VERSION_+' [tr. jediah.nl]'
   );
 
 implementation
