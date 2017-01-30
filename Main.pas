@@ -121,7 +121,7 @@ end;
 
 procedure TfWindow.bProcessClick(Sender: TObject);
 var
-  Script: AnsiString;
+  Script: String;
   DVersion, ScriptURL: String;
 begin
   Script := '';
@@ -496,7 +496,7 @@ begin
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
-                if DirectoryExists(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)+'\') then
+                if SysUtils.DirectoryExists(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)+'\') then
                   DeleteDirectory(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)+'\');
             end
 
@@ -860,7 +860,7 @@ begin
           begin
             for I := 1 to Length(WoT_Dir) do
               begin
-                if DirectoryExists(StrPas(vDrive)+WoT_Dir[I]+'\') then
+                if SysUtils.DirectoryExists(StrPas(vDrive)+WoT_Dir[I]+'\') then
                   begin
                     Directory := StrPas(vDrive)+WoT_Dir[I];
                     if FileExists(Directory + '\worldoftanks.exe') then

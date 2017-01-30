@@ -42,6 +42,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_WIDECHAR_REDUCED>false</DCC_WIDECHAR_REDUCED>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>XVM_Updater</SanitizedProjectName>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -83,6 +84,12 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Build>1200</VerInfo_Build>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_WIDECHAR_REDUCED>false</DCC_WIDECHAR_REDUCED>
+        <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
+        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1200;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>
@@ -93,6 +100,8 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_Build>1200</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1200;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>

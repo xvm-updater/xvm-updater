@@ -260,7 +260,7 @@ begin
     finally
       fs.Free;
     end;
-    S := UTF8Encode(StringReplace(UTF8Decode(S),
+    S := UTF8Encode(StringReplace(UTF8ToString(S),
                     SearchString,
                     ReplaceString,
                     [rfReplaceAll, rfIgnoreCase]));
