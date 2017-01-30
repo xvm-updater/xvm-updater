@@ -38,7 +38,6 @@ function GetShortcutTarget(FileName: String):String;
 
 procedure FCopy(source: String; destination: String);
 function DeleteDirectory(Dir: String):Boolean;
-procedure ExecuteAndWait(Filename, Parameters: String; Application: TApplication);
 function ProcessExists(exeFileName: String):Boolean;
 function IsDriveReady(Root: String):Boolean;
 
@@ -188,34 +187,6 @@ begin
     pFrom := PChar(Dir + #0);
   end;
   Result := (0 = ShFileOperation(fos));  // Fail silently anyway.
-end;
-
-
-procedure ExecuteAndWait(Filename, Parameters: String; Application: TApplication);
-var
-  SEInfo: TShellExecuteInfo;
-  ExitCode: DWORD;
-begin
-  FillChar(SEInfo, SizeOf(SEInfo), 0);
-  SEInfo.cbSize := SizeOf(TShellExecuteInfo);
-
-  with SEInfo do begin
-    fMask := SEE_MASK_NOCLOSEPROCESS;
-    Wnd := Application.Handle;
-    lpFile := PChar(Filename);
-    lpParameters := PChar(Parameters);
-    if (Win32MajorVersion > 5) then lpVerb := PChar('runas');
-    nShow := SW_SHOWNORMAL;
-  end;
-
-  if ShellExecuteEx(@SEInfo) then
-    begin
-      repeat
-        Sleep(10);
-        Application.ProcessMessages;
-        GetExitCodeProcess(SEInfo.hProcess, ExitCode);
-      until (ExitCode <> STILL_ACTIVE) or Application.Terminated;
-    end
 end;
 
 

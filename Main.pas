@@ -240,7 +240,7 @@ function TfWindow.Replace(Data: PString; Version: String):Boolean;
   end;
 
 var
-  TempFolder, WinFolder: String;
+  TempFolder: String;
   Versions: TStringList;
   lng: DWORD;
 begin
@@ -250,12 +250,6 @@ begin
   SetLength(TempFolder, lng-1);
   TempFolder := ExtractLongPathName(TempFolder);  // Fix for failing Windows functions
   Data^ := StringReplace(Data^, '%TEMP%', TempFolder, [rfReplaceAll]);
-
-  // %WINDOWS%
-  SetLength(WinFolder, MAX_PATH);
-  lng := GetWindowsDirectory(PChar(WinFolder), MAX_PATH);
-  SetLength(WinFolder, lng);
-  Data^ := StringReplace(Data^, '%WINDOWS%', WinFolder, [rfReplaceAll]);
 
   // %CUSTOMCONFIG%
   if (cmbConfig.ItemIndex > 0) then
@@ -329,7 +323,7 @@ begin
       if ((Data[Position] = #13) or (Data[Position] = #10)) then
 
         begin
-          if (AnsiLeftStr(Buffer, 5) = 'ENDIF') then
+          if (LeftStr(Buffer, 5) = 'ENDIF') then
             begin
               Result := Position;
               Exit;
@@ -351,32 +345,32 @@ begin
           // STATUS: write the current performed action in 'Current action:' line.
           // EX:
           //   STATUS = Downloading XVM...
-          if (AnsiLeftStr(Buffer, 6) = 'STATUS') then
+          if (LeftStr(Buffer, 6) = 'STATUS') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  if AnsiRightStr(Buffer, 2) = LanguageMin[currentLanguage] then
+                  if RightStr(Buffer, 2) = LanguageMin[currentLanguage] then
                     lCurrentAction.Caption := siCurrentAction[currentLanguage] +
-                      AnsiRightStr(LineBuffer, Length(LineBuffer)-3)
+                      RightStr(LineBuffer, Length(LineBuffer)-3)
                   // Default is english
-                  else if AnsiRightStr(Buffer, 2) = LanguageMin[lngEN] then
+                  else if RightStr(Buffer, 2) = LanguageMin[lngEN] then
                     lCurrentAction.Caption := siCurrentAction[currentLanguage] +
-                      AnsiRightStr(LineBuffer, Length(LineBuffer)-3);
+                      RightStr(LineBuffer, Length(LineBuffer)-3);
                 end;
             end
 
           // GETFILE: Download a file from the Internet and store it on the disk.
           // EX:
           //   GETFILE "http://aaa.com/bbb.txt" "C:\ccc.txt"
-          else if (AnsiLeftStr(Buffer, 7) = 'GETFILE') then
+          else if (LeftStr(Buffer, 7) = 'GETFILE') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
                   DLThread := TDLThread.Create(StrSplit(LineBuffer)[0], True);
                   DLThread.Start;
 
@@ -402,26 +396,26 @@ begin
           // PERCENT: define the process progression (progress bar position).
           // EX:
           //   PERCENT = 50
-          else if (AnsiLeftStr(Buffer, 7) = 'PERCENT') then
+          else if (LeftStr(Buffer, 7) = 'PERCENT') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 bProcess.Caption := Format('%s (%d%%)',
-                  [siInstallUpdate[currentLanguage], StrToInt(AnsiRightStr(LineBuffer, Length(LineBuffer)-3))]);
+                  [siInstallUpdate[currentLanguage], StrToInt(RightStr(LineBuffer, Length(LineBuffer)-3))]);
             end
 
           // UNPACK: unzip a specified zipfile in a specified directory.
           // EX:
           //   UNPACK "C:\aaa.zip" "C:\Folder"
-          else if (AnsiLeftStr(Buffer, 6) = 'UNPACK') then
+          else if (LeftStr(Buffer, 6) = 'UNPACK') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
                   pbCurrentAction.Position := 0;
-                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
 
                   Unzipper := TAbUnzipper.Create(nil);
                   with Unzipper do begin
@@ -438,51 +432,27 @@ begin
           // COPY: copy a file.
           // EX:
           //   COPY "C:\aaa.txt" "C:\bbb.txt"
-          else if (AnsiLeftStr(Buffer, 4) = 'COPY') then
+          else if (LeftStr(Buffer, 4) = 'COPY') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
                   FCopy(StrSplit(LineBuffer)[0], StrSplit(LineBuffer)[1]);
-                end;
-            end
-
-          // RUN: execute a specified file and wait process termination.
-          // Second parameter: specified parameters for the process (can be null).
-          // EX:
-          //   RUN "C:\aaa.exe" ""
-          else if (AnsiLeftStr(Buffer, 3) = 'RUN') then
-
-            begin
-              LineBuffer := ReadLine(Data, @Position);
-              if Execute then
-                begin
-                  pbCurrentAction.Style := pbstMarquee;
-                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
-                  ExecuteAndWait(StrSplit(LineBuffer)[0], StrSplit(LineBuffer)[1], Application);
-
-                  if Application.Terminated then
-                    begin
-                      Result := Length(Data);
-                      Exit;
-                    end;
-
-                  pbCurrentAction.Style := pbstNormal;
                 end;
             end
 
           // CONFIG_RTC: removes trailing configs/ path in the boot config file.
           // EX:
           //   CONFIG_RTC C:\XVM.xvmconf
-          else if (AnsiLeftStr(Buffer, 10) = 'CONFIG_RTC') then
+          else if (LeftStr(Buffer, 10) = 'CONFIG_RTC') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  LineBuffer := AnsiRightStr(LineBuffer, Length(LineBuffer)-1);
+                  LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
                   if FileExists(LineBuffer) then
                     FileReplaceString(LineBuffer, '${"configs/', '${"');
                 end;
@@ -491,42 +461,42 @@ begin
           // DELETEDIR: delete a specified directory.
           // EX:
           //   DELETEDIR C:\Folder
-          else if (AnsiLeftStr(Buffer, 9) = 'DELETEDIR') then
+          else if (LeftStr(Buffer, 9) = 'DELETEDIR') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
-                if SysUtils.DirectoryExists(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)+'\') then
-                  DeleteDirectory(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)+'\');
+                if SysUtils.DirectoryExists(RightStr(LineBuffer, Length(LineBuffer)-1)+'\') then
+                  DeleteDirectory(RightStr(LineBuffer, Length(LineBuffer)-1)+'\');
             end
 
-          else if (AnsiLeftStr(Buffer, 6) = 'DELETE') then
+          else if (LeftStr(Buffer, 6) = 'DELETE') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
-                SysUtils.DeleteFile(AnsiRightStr(LineBuffer, Length(LineBuffer)-1));
+                SysUtils.DeleteFile(RightStr(LineBuffer, Length(LineBuffer)-1));
             end
 
           // IF_NEXISTS: execute the next commands block if the specified file doesn't exist.
           // EX:
           //   IF_NEXISTS C:\aaa.txt
-          else if (AnsiLeftStr(Buffer, 10) = 'IF_NEXISTS') then
+          else if (LeftStr(Buffer, 10) = 'IF_NEXISTS') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
                   try
-                    if FileExists(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)) then
+                    if FileExists(RightStr(LineBuffer, Length(LineBuffer)-1)) then
                       Position := Position +
-                        Parse(AnsiRightStr(Data, Length(Data)-Position), false)
+                        Parse(RightStr(Data, Length(Data)-Position), false)
                     else
                       Position := Position +
-                        Parse(AnsiRightStr(Data, Length(Data)-Position), true);
+                        Parse(RightStr(Data, Length(Data)-Position), true);
                   except
                     Position := Position +
-                      Parse(AnsiRightStr(Data, Length(Data)-Position), true);
+                      Parse(RightStr(Data, Length(Data)-Position), true);
                   end;
                 end;
             end
@@ -534,22 +504,22 @@ begin
           // IF_EXISTS: execute the next commands block if the specified file exists.
           // EX:
           //   IF_EXISTS C:\aaa.txt
-          else if (AnsiLeftStr(Buffer, 9) = 'IF_EXISTS') then
+          else if (LeftStr(Buffer, 9) = 'IF_EXISTS') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
                   try
-                    if FileExists(AnsiRightStr(LineBuffer, Length(LineBuffer)-1)) then
+                    if FileExists(RightStr(LineBuffer, Length(LineBuffer)-1)) then
                       Position := Position +
-                        Parse(AnsiRightStr(Data, Length(Data)-Position), true)
+                        Parse(RightStr(Data, Length(Data)-Position), true)
                     else
                       Position := Position +
-                        parse(AnsiRightStr(Data, Length(Data)-Position), false);
+                        parse(RightStr(Data, Length(Data)-Position), false);
                   except
                     Position := Position +
-                      Parse(AnsiRightStr(Data, Length(Data)-Position), false);
+                      Parse(RightStr(Data, Length(Data)-Position), false);
                   end;
                 end;
             end
@@ -558,18 +528,18 @@ begin
           // Used with 'Replace' procedure that defines checked options in the script.
           // EX:
           //   IF 1
-          else if (AnsiLeftStr(Buffer, 2) = 'IF') then
+          else if (LeftStr(Buffer, 2) = 'IF') then
 
             begin
               LineBuffer := ReadLine(Data, @Position);
               if Execute then
                 begin
-                  if AnsiRightStr(LineBuffer, Length(LineBuffer)-1) = '1' then
+                  if RightStr(LineBuffer, Length(LineBuffer)-1) = '1' then
                     Position := Position +
-                      Parse(AnsiRightStr(Data, Length(Data)-Position), true)
+                      Parse(RightStr(Data, Length(Data)-Position), true)
                   else
                     Position := Position +
-                      Parse(AnsiRightStr(Data, Length(Data)-Position), false);
+                      Parse(RightStr(Data, Length(Data)-Position), false);
                 end;
             end
 
