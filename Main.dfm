@@ -3,7 +3,7 @@ object fWindow: TfWindow
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XVM Updater v2.8 par LaCourgette'
+  Caption = 'XVM Updater v2.9 par LaCourgette'
   ClientHeight = 285
   ClientWidth = 514
   Color = clBtnFace
@@ -14,7 +14,6 @@ object fWindow: TfWindow
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  Scaled = False
   OnCreate = FormCreate
   DesignSize = (
     514
@@ -78,27 +77,34 @@ object fWindow: TfWindow
       OnClick = cbKeepConfigClick
     end
     object eDirectory: TEdit
+      AlignWithMargins = True
       Left = 16
-      Top = 24
-      Width = 348
+      Top = 23
+      Width = 342
       Height = 24
-      Anchors = [akLeft, akTop, akRight]
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      AutoSize = False
       Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
     end
     object bChangeDirectory: TButton
       Left = 370
       Top = 23
       Width = 111
-      Height = 26
-      Anchors = [akTop, akRight]
+      Height = 24
       Caption = 'Modifier'
       TabOrder = 2
       OnClick = bChangeDirectoryClick
     end
     object cmbXVMVersion: TComboBox
       Left = 114
-      Top = 78
+      Top = 80
       Width = 134
       Height = 24
       Style = csDropDownList
@@ -109,7 +115,7 @@ object fWindow: TfWindow
     end
     object cmbConfig: TComboBox
       Left = 354
-      Top = 78
+      Top = 80
       Width = 127
       Height = 24
       Style = csDropDownList
@@ -207,7 +213,7 @@ object fWindow: TfWindow
     Left = 280
     Top = 248
     Bitmap = {
-      494C01010A000D00040010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
+      494C01010A000D000C0010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000210000000100180000000000C018
       0000000000000000000000000000000000007A00007400006E00006A00006400
       005E00005A00005600005000004C00004600004200004000003C00003A00003C

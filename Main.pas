@@ -23,7 +23,7 @@ interface
 uses
   Windows, SysUtils, Classes, IOUtils, Forms, FileCtrl, StrUtils, Controls,
   WoT_Utils, Masks, Languages, ImgList, ButtonGroup, DLThread, AbUnZper,
-  AbArcTyp, ComCtrls, StdCtrls;
+  AbArcTyp, ComCtrls, StdCtrls, System.ImageList, Dialogs;
 // Note: I'm using a customized version of ButtonGroup.pas, allowing me to not
 //   display the ugly focus rectangle of the TButtonGroup component. However,
 //   I can't share the modified source code according to Embarcadero's license.
@@ -83,6 +83,8 @@ implementation
 
 {$R *.dfm}
 
+const
+  BACKEND = 'http://edgar-fournival.fr/obj/wotxvm/';//'http://xvm.edgar-fournival.fr/';
 
 procedure TfWindow.bChangeDirectoryClick(Sender: TObject);
 var
@@ -112,9 +114,7 @@ procedure TfWindow.SetVersion;
 begin
   eDirectory.Text := WOTDir;
   Version := GetVersion(WOTDir+'\worldoftanks.exe');
-  TDLThread.Create(
-    'http://edgar-fournival.fr/obj/wotxvm/xvm-versions?version='+Version,
-    UpdateVersions);
+  TDLThread.Create(BACKEND+'xvm-versions?version='+Version, UpdateVersions);
   LastNightlyRev := '';
 end;
 
@@ -156,7 +156,7 @@ begin
   DVersion := Version;
   if cmbXVMversion.ItemIndex > 0 then
     DVersion := VersionsFiles[cmbXVMversion.ItemIndex];
-  ScriptURL := 'http://edgar-fournival.fr/obj/wotxvm/script?version='+DVersion;
+  ScriptURL := BACKEND+'script?version='+DVersion;
 
   // Set up script source if forced from command line
   if CustomScript <> '' then
@@ -715,8 +715,8 @@ begin
   lXVMversion.Caption := siXVMversion[currentLanguage];
   lConfig.Caption := siConfig[currentLanguage];
 
-  cmbXVMversion.Left := 114 + (lXVMversion.Width - 96);
-  lConfig.Left := 265 - (lConfig.Width - 88);
+  cmbXVMversion.Left := lXVMversion.Left + lXVMversion.Width;
+  lConfig.Left := cmbConfig.Left - lConfig.Width;
 
   if cmbConfig.Items[0] = sDefault[OldLng] then
     begin
@@ -737,7 +737,7 @@ begin
   if MatchesMask(cmbXVMversion.Items[cmbXVMversion.ItemIndex], '*nightly*') and
      (Length(LastNightlyRev) = 0) then
     TDLThread.Create(
-      'http://edgar-fournival.fr/obj/wotxvm/get_last_nightly',
+      'http://xvm-updater.edgar-fournival.fr/get_last_nightly',
       UpdateNightlyRev);
 end;
 
@@ -770,8 +770,7 @@ begin
 
   cmbXVMversion.ItemIndex := cmbXVMversion.Items.Add(sStable[currentLanguage]);
   cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
-  TDLThread.Create('http://edgar-fournival.fr/obj/wotxvm/xvm-configs.php',
-    UpdateConfigs);
+  TDLThread.Create(BACKEND+'xvm-configs', UpdateConfigs);
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+

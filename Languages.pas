@@ -25,7 +25,8 @@ type
   // /!\ Keep the same order in arrays /!\ //
 
 const
-  _VERSION_ = 'v2.9';
+  VERSION = 'v2.9';
+
   LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl', 'es');
 
   sSelectDirectory: array[TLanguage] of String = (
@@ -289,16 +290,16 @@ const
   );
 
   siForm: array[TLanguage] of String = (
-    'XVM Updater '+_VERSION_+' by LaCourgette', // Thanks blademansw
-    'XVM Updater '+_VERSION_+' par LaCourgette',
-    'XVM Updater '+_VERSION_+' von LaCourgette [tr. Exekutive]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tł. pokapokami]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. wot-ka.ru]',  // Thanks Recnac_UKR
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. buenonacho94]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. Seula]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. jediah.nl]',
-    'XVM Updater '+_VERSION_+' by LaCourgette [tr. Capitán Cable]'
+    'XVM Updater '+VERSION+' by LaCourgette', // Thanks blademansw
+    'XVM Updater '+VERSION+' par LaCourgette',
+    'XVM Updater '+VERSION+' von LaCourgette [tr. Exekutive]',
+    'XVM Updater '+VERSION+' by LaCourgette [tł. pokapokami]',
+    'XVM Updater '+VERSION+' by LaCourgette [tr. wot-ka.ru, Mr.A]',  // Thanks Recnac_UKR
+    'XVM Updater '+VERSION+' by LaCourgette [tr. wot-ka.ru]',  // Thanks Recnac_UKR
+    'XVM Updater '+VERSION+' by LaCourgette [tr. buenonacho94]',
+    'XVM Updater '+VERSION+' by LaCourgette [tr. Seula]',
+    'XVM Updater '+VERSION+' by LaCourgette [tr. jediah.nl]',
+    'XVM Updater '+VERSION+' by LaCourgette [tr. Capitán Cable]'
   );
 
 implementation
