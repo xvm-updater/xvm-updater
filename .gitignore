@@ -1,3 +1,7 @@
+upx.exe
+XVM_Updater.exe
+*.stat
+*.obj
 *.bpl
 *.bpi
 *.dcp
