@@ -49,7 +49,8 @@
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
         <VerInfo_MinorVer>9</VerInfo_MinorVer>
         <VerInfo_AutoGenVersion>true</VerInfo_AutoGenVersion>
-        <VerInfo_Keys>CompanyName=LaCourgette;FileDescription=World of Tanks&apos;s XVM one click installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright © 2013 - 2015 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=LaCourgette;FileDescription=World of Tanks&apos;s XVM one click 
+installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;PrivateBuild=</VerInfo_Keys>
         <VerInfo_Build>1199</VerInfo_Build>
         <DCC_UnitSearchPath>.\abbrevia\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IMPLICIT_STRING_CAST>false</DCC_IMPLICIT_STRING_CAST>
@@ -59,15 +60,16 @@
         <DCC_Platform>x86</DCC_Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
+        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName)</VerInfo_Keys>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <Icon_MainIcon>logo.ico</Icon_MainIcon>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
+        <Icon_MainIcon>XVM_Updater_Icon.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_StringChecks>off</DCC_StringChecks>

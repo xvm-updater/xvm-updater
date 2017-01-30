@@ -1,6 +1,6 @@
 {
     XVM Updater - World of Tanks's XVM one click installer/updater
-    Copyright (C) 2013 - 2014  Edgar 'LaCourgette' Fournival
+    Copyright (C) 2013 - 2017  Edgar 'LaCourgette' Fournival
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
