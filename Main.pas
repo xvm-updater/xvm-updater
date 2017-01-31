@@ -84,7 +84,7 @@ implementation
 {$R *.dfm}
 
 const
-  BACKEND = 'http://edgar-fournival.fr/obj/wotxvm/';//'http://xvm.edgar-fournival.fr/';
+  BACKEND = 'http://xvm.edgar-fournival.fr/';
 
 procedure TfWindow.bChangeDirectoryClick(Sender: TObject);
 var
@@ -114,7 +114,7 @@ procedure TfWindow.SetVersion;
 begin
   eDirectory.Text := WOTDir;
   Version := GetVersion(WOTDir+'\worldoftanks.exe');
-  TDLThread.Create(BACKEND+'xvm-versions?version='+Version, UpdateVersions);
+  TDLThread.Create(BACKEND+'get-xvm-versions?version='+Version, UpdateVersions);
   LastNightlyRev := '';
 end;
 
@@ -156,7 +156,7 @@ begin
   DVersion := Version;
   if cmbXVMversion.ItemIndex > 0 then
     DVersion := VersionsFiles[cmbXVMversion.ItemIndex];
-  ScriptURL := BACKEND+'script?version='+DVersion;
+  ScriptURL := BACKEND+'get-script?version='+DVersion;
 
   // Set up script source if forced from command line
   if CustomScript <> '' then
@@ -706,9 +706,7 @@ procedure TfWindow.cmbXVMVersionChange(Sender: TObject);
 begin
   if MatchesMask(cmbXVMversion.Items[cmbXVMversion.ItemIndex], '*nightly*') and
      (Length(LastNightlyRev) = 0) then
-    TDLThread.Create(
-      'http://xvm-updater.edgar-fournival.fr/get_last_nightly',
-      UpdateNightlyRev);
+    TDLThread.Create(BACKEND+'get-last-nightly', UpdateNightlyRev);
 end;
 
 procedure TfWindow.FormCreate(Sender: TObject);
@@ -740,7 +738,7 @@ begin
 
   cmbXVMversion.ItemIndex := cmbXVMversion.Items.Add(sStable[currentLanguage]);
   cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
-  TDLThread.Create(BACKEND+'xvm-configs', UpdateConfigs);
+  TDLThread.Create(BACKEND+'get-xvm-configs', UpdateConfigs);
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+
