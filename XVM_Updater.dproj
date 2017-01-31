@@ -3,7 +3,7 @@
         <ProjectGuid>{1D7533F4-434D-4107-86F9-1157F110DE02}</ProjectGuid>
         <ProjectVersion>18.2</ProjectVersion>
         <MainSource>XVM_Updater.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Débogage</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -62,6 +62,8 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_Platform>x86</DCC_Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_HRESULT_COMPAT>false</DCC_HRESULT_COMPAT>
+        <DCC_MapFile>3</DCC_MapFile>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -85,12 +87,12 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Build>1202</VerInfo_Build>
+        <VerInfo_Build>1208</VerInfo_Build>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_WIDECHAR_REDUCED>false</DCC_WIDECHAR_REDUCED>
         <VerInfo_AutoGenVersion>false</VerInfo_AutoGenVersion>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1202;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1208;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>
@@ -101,8 +103,8 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Build>1200</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1200;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
+        <VerInfo_Build>1202</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1202;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>
@@ -113,9 +115,9 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCCReference Include="Main.pas">
             <Form>fWindow</Form>
         </DCCReference>
-        <DCCReference Include="DLThread.pas"/>
         <DCCReference Include="WoT_Utils.pas"/>
         <DCCReference Include="Languages.pas"/>
+        <DCCReference Include="AsyncDownloader.pas"/>
         <BuildConfiguration Include="Débogage">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -21,9 +21,9 @@ program XVM_Updater;
 uses
   Forms,
   Main in 'Main.pas' {fWindow},
-  DLThread in 'DLThread.pas',
   WoT_Utils in 'WoT_Utils.pas',
-  Languages in 'Languages.pas';
+  Languages in 'Languages.pas',
+  AsyncDownloader in 'AsyncDownloader.pas';
 
 {$R *.res}
 

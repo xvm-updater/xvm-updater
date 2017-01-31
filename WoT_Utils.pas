@@ -26,10 +26,15 @@ uses
   SysUtils, Windows, Classes, Masks, ShellAPI, ShlObj, ActiveX, Forms, Tlhelp32,
   ComOBJ;
 
+// No declaration of this function in Windows unit, strange.
+function GetLongPathName(ShortPathName: PChar; LongPathName: PChar;
+  cchBuffer: Integer): Integer; stdcall; external kernel32 name 'GetLongPathNameW';
+
 type
   TStringArray = array of String;
   PString = ^String;
 
+function GetTempFolder():String;
 function GetVersion(FileName: String):String;
 procedure GetSubDirectories(const directory: String; List: TStringList);
 function GetDesktop:String;
@@ -47,6 +52,20 @@ procedure FileReplaceString(const FileName, SearchString, ReplaceString: String)
 
 implementation
 
+function GetTempFolder():String;
+  function ExtractLongPathName(const ShortName: string): string;
+  begin
+    SetLength(Result, GetLongPathName(PChar(ShortName), nil, 0));
+    SetLength(Result, GetLongPathName(PChar(ShortName), PChar(Result), Length(Result)));
+  end;
+var
+  lng: DWORD;
+begin
+  SetLength(Result, MAX_PATH);
+  lng := GetTempPath(MAX_PATH, PChar(Result));
+  SetLength(Result, lng-1);
+  Result := ExtractLongPathName(Result);
+end;
 
 function GetVersion(FileName: String):String;
 var

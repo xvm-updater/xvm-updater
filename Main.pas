@@ -22,17 +22,8 @@ interface
 
 uses
   Windows, SysUtils, Classes, IOUtils, Forms, FileCtrl, StrUtils, Controls,
-  WoT_Utils, Masks, Languages, ImgList, ButtonGroup, DLThread, AbUnZper,
-  AbArcTyp, ComCtrls, StdCtrls, System.ImageList, Dialogs;
-// Note: I'm using a customized version of ButtonGroup.pas, allowing me to not
-//   display the ugly focus rectangle of the TButtonGroup component. However,
-//   I can't share the modified source code according to Embarcadero's license.
-//   Simply put { ... } around FFocusIndex handler in Paint event or use my
-//   compiled version (ButtonGroup.dcu).
-
-// No declaration of this function in Windows unit, strange.
-function GetLongPathName(ShortPathName: PChar; LongPathName: PChar;
-  cchBuffer: Integer): Integer; stdcall; external kernel32 name 'GetLongPathNameW';
+  WoT_Utils, Masks, Languages, ImgList, ButtonGroup, AbUnZper, AbArcTyp,
+  ComCtrls, StdCtrls, System.ImageList, AsyncDownloader, Dialogs;
 
 type
   TfWindow = class(TForm)
@@ -58,7 +49,6 @@ type
     procedure bgLanguageButtonClicked(Sender: TObject; Index: Integer);
     procedure cmbXVMVersionChange(Sender: TObject);
   private
-    DLThread: TDLThread;
     VersionsFiles, ConfigsFiles: TStringList;
     WOTDir: String;
     Version: String;
@@ -68,9 +58,9 @@ type
     procedure UnzipProgress(Sender: TObject; Progress: Byte; var Abort: Boolean);
     function Parse(Data: String; Execute: Boolean):Integer;
     procedure SetVersion;
-    procedure UpdateVersions(Data: TMemoryStream);
-    procedure UpdateConfigs(Data: TMemoryStream);
-    procedure UpdateNightlyRev(Data: TMemoryStream);
+    procedure UpdateVersions(Data: String);
+    procedure UpdateConfigs(Data: String);
+    procedure UpdateNightlyRev(Data: String);
     procedure ChangeLanguage(NewLng: TLanguage);
   public
     currentLanguage: TLanguage;
@@ -84,7 +74,7 @@ implementation
 {$R *.dfm}
 
 const
-  BACKEND = 'http://xvm.edgar-fournival.fr/';
+  BACKEND = 'https://xvm.edgar-fournival.fr/';
 
 procedure TfWindow.bChangeDirectoryClick(Sender: TObject);
 var
@@ -114,7 +104,7 @@ procedure TfWindow.SetVersion;
 begin
   eDirectory.Text := WOTDir;
   Version := GetVersion(WOTDir+'\worldoftanks.exe');
-  TDLThread.Create(BACKEND+'get-xvm-versions?version='+Version, UpdateVersions);
+  TAsyncDownloader.Create(BACKEND+'get-xvm-versions?version='+Version, UpdateVersions);
   LastNightlyRev := '';
 end;
 
@@ -123,6 +113,7 @@ procedure TfWindow.bProcessClick(Sender: TObject);
 var
   Script: String;
   DVersion, ScriptURL: String;
+  Downloader: TAsyncDownloader;
 begin
   Script := '';
 
@@ -176,18 +167,18 @@ begin
         LanguageMin[currentLanguage]+' = '+
         sScriptDownload[currentLanguage], true);
 
-      DLThread := TDLThread.Create(ScriptURL, True);
+      Downloader := TAsyncDownloader.Create(ScriptURL);
       try
-        DLThread.Start;
+        Downloader.Start;
         repeat
           Sleep(10);
           Application.ProcessMessages;
-        until DLThread.Finished or Application.Terminated;
-        if Application.Terminated then Exit;
-        SetString(Script, PAnsiChar(DLThread.Data.Memory), DLThread.Data.Size);
+        until Downloader.Finished or Application.Terminated;
+        if Application.Terminated then
+          Exit;
+        Script := Downloader.GetString;
       finally
-        DLThread.Data.Free;
-        DLThread.Free;
+        Downloader.Free;
       end;
     end;
 
@@ -226,30 +217,17 @@ procedure TfWindow.cbKeepConfigClick(Sender: TObject);
 begin
   if cbKeepConfig.Checked then
     cmbConfig.Enabled := False
-  else
+  else if cmbConfig.Items.Count > 1 then
     cmbConfig.Enabled := True;
 end;
 
 
 function TfWindow.Replace(Data: PString; Version: String):Boolean;
-
-  function ExtractLongPathName(const ShortName: string): string;
-  begin
-    SetLength(Result, GetLongPathName(PChar(ShortName), nil, 0));
-    SetLength(Result, GetLongPathName(PChar(ShortName), PChar(Result), Length(Result)));
-  end;
-
 var
-  TempFolder: String;
   Versions: TStringList;
-  lng: DWORD;
 begin
   // %TEMP%
-  SetLength(TempFolder, MAX_PATH);
-  lng := GetTempPath(MAX_PATH, PChar(TempFolder));
-  SetLength(TempFolder, lng-1);
-  TempFolder := ExtractLongPathName(TempFolder);  // Fix for failing Windows functions
-  Data^ := StringReplace(Data^, '%TEMP%', TempFolder, [rfReplaceAll]);
+  Data^ := StringReplace(Data^, '%TEMP%', GetTempFolder, [rfReplaceAll]);
 
   // %CUSTOMCONFIG%
   if (cmbConfig.ItemIndex > 0) then
@@ -311,6 +289,7 @@ var
   Buffer, LineBuffer: String;
   Position: Integer;
   Unzipper: TAbUnzipper;
+  Downloader: TAsyncDownloader;
 begin
   Position := 1;
   Buffer := '';
@@ -371,25 +350,22 @@ begin
               if Execute then
                 begin
                   LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
-                  DLThread := TDLThread.Create(StrSplit(LineBuffer)[0], True);
-                  DLThread.Start;
 
-                  repeat
-                    Sleep(10);
-                    Application.ProcessMessages;
-                  until DLThread.Finished or Application.Terminated;
-
-                  if (DLThread.Data.Size < 1) or
-                     DLThread.Failed or
-                     Application.Terminated then
-                    begin
-                      Result := Length(Data);
-                      Exit;
-                    end;
-
-                  DLThread.Data.SaveToFile(StrSplit(LineBuffer)[1]);
-                  DLThread.Data.Free;
-                  DLThread.Free;
+                  Downloader := TAsyncDownloader.Create(StrSplit(LineBuffer)[0]);
+                  try
+                    Downloader.Download(StrSplit(LineBuffer)[1]);
+                    repeat
+                      Sleep(10);
+                      Application.ProcessMessages;
+                    until Downloader.Finished or Application.Terminated;
+                    if Application.Terminated then
+                      begin
+                        Result := Length(Data);
+                        Exit;
+                      end;
+                  finally
+                    Downloader.Free;
+                  end;
                 end;
             end
 
@@ -440,21 +416,6 @@ begin
                 begin
                   LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
                   FCopy(StrSplit(LineBuffer)[0], StrSplit(LineBuffer)[1]);
-                end;
-            end
-
-          // CONFIG_RTC: removes trailing configs/ path in the boot config file.
-          // EX:
-          //   CONFIG_RTC C:\XVM.xvmconf
-          else if (LeftStr(Buffer, 10) = 'CONFIG_RTC') then
-
-            begin
-              LineBuffer := ReadLine(Data, @Position);
-              if Execute then
-                begin
-                  LineBuffer := RightStr(LineBuffer, Length(LineBuffer)-1);
-                  if FileExists(LineBuffer) then
-                    FileReplaceString(LineBuffer, '${"configs/', '${"');
                 end;
             end
 
@@ -557,43 +518,37 @@ begin
 end;
 
 
-procedure TfWindow.UpdateVersions(Data: TMemoryStream);
+procedure TfWindow.UpdateVersions(Data: String);
 var
-  Position: Integer;
-  Line, Versions: String;
+  KeyVal: String;
+  Strings: TArray<String>;
+  I: Integer;
 begin
-  SetString(Versions, PAnsiChar(Data.Memory), Data.Size);
-  Position := 1;
-
   cmbXVMVersion.Items.Clear;
   VersionsFiles.Clear;
 
-  while Position < Length(Versions) do
+  Strings := Data.Split([#13, #10]);
+
+  for I := 0 to Length(Strings) - 1 do
     begin
-      Line := '';
-      while ((Versions[Position] <> #10) and
-             (Versions[Position] <> #13) and
-             (Position <= Length(Versions))) do
+      KeyVal := Trim(Strings[I]);
+
+      if Length(KeyVal) > 0 then
         begin
-          Line := Line + Versions[Position];
-          Inc(Position);
-        end;
-      Inc(Position);
-      if Trim(Line) <> '' then
-        begin
-          cmbXVMversion.Items.Add(StrSplit(Line)[0]);
-          VersionsFiles.Add(StrSplit(Line)[1]);
+          cmbXVMversion.Items.Add(StrSplit(KeyVal)[0]);
+          VersionsFiles.Add(StrSplit(KeyVal)[1]);
         end;
     end;
 
   // Avoid garbage in the menu if HTML code is returned
-  if cmbXVMversion.Items.Count > 10 then cmbXVMVersion.Items.Clear;
+  if cmbXVMversion.Items.Count > 10 then
+    cmbXVMVersion.Items.Clear;
 
   cmbXVMversion.ItemIndex := 0;
   if cmbXVMversion.Items.Count < 1 then
     begin
       cmbXVMversion.ItemIndex := cmbXVMversion.Items.Add(sStable[currentLanguage]);
-      versionsFiles.Add('');
+      VersionsFiles.Add('');
     end;
 
   if cmbXVMversion.Items.Count > 1 then
@@ -603,29 +558,22 @@ begin
 end;
 
 
-procedure TfWindow.UpdateConfigs(Data: TMemoryStream);
+procedure TfWindow.UpdateConfigs(Data: String);
 var
-  Position: Integer;
-  Line, Versions: String;
+  KeyVal: String;
+  Strings: TArray<String>;
+  I: Integer;
 begin
-  SetString(Versions, PAnsiChar(Data.Memory), Data.Size);
-  Position := 1;
+  Strings := Data.Split([#13, #10]);
 
-  while Position < Length(Versions) do
+  for I := 0 to Length(Strings) - 1 do
     begin
-      Line := '';
-      while ((Versions[Position] <> #10) and
-             (Versions[Position] <> #13) and
-             (Position <= Length(Versions))) do
+      KeyVal := Trim(Strings[I]);
+
+      if Length(KeyVal) > 0 then
         begin
-          Line := Line + Versions[Position];
-          Inc(Position);
-        end;
-      Inc(Position);
-      if Trim(Line) <> '' then
-        begin
-          cmbConfig.Items.Add(StrSplit(Line)[0]);
-          ConfigsFiles.Add(StrSplit(Line)[1]);
+          cmbConfig.Items.Add(StrSplit(KeyVal)[0]);
+          ConfigsFiles.Add(StrSplit(KeyVal)[1]);
         end;
     end;
 
@@ -636,19 +584,20 @@ begin
       cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
     end;
 
-  if cmbConfig.Items.Count > 1 then cmbConfig.Enabled := true;
+  if cmbConfig.Items.Count > 1 then
+    cmbConfig.Enabled := true;
 end;
 
 
-procedure TfWindow.UpdateNightlyRev(Data: TMemoryStream);
+procedure TfWindow.UpdateNightlyRev(Data: String);
 var
   I: Integer;
   OldItemIndex: Integer;
 begin
   // Avoid garbage
-  if (Data.Size < 10) and (Data.Size > 0) then
+  if (Length(Data) < 10) and (Length(Data) > 0) then
     begin
-      SetString(LastNightlyRev, PAnsiChar(Data.Memory), Data.Size);
+      LastNightlyRev := Data;
 
       for I := 0 to cmbXVMversion.Items.Count - 1 do
         if MatchesMask(cmbXVMversion.Items[I], '*nightly*') then
@@ -706,7 +655,7 @@ procedure TfWindow.cmbXVMVersionChange(Sender: TObject);
 begin
   if MatchesMask(cmbXVMversion.Items[cmbXVMversion.ItemIndex], '*nightly*') and
      (Length(LastNightlyRev) = 0) then
-    TDLThread.Create(BACKEND+'get-last-nightly', UpdateNightlyRev);
+    TAsyncDownloader.Create(BACKEND+'get-last-nightly', UpdateNightlyRev);
 end;
 
 procedure TfWindow.FormCreate(Sender: TObject);
@@ -738,7 +687,7 @@ begin
 
   cmbXVMversion.ItemIndex := cmbXVMversion.Items.Add(sStable[currentLanguage]);
   cmbConfig.ItemIndex := cmbConfig.Items.Add(sDefault[currentLanguage]);
-  TDLThread.Create(BACKEND+'get-xvm-configs', UpdateConfigs);
+  TAsyncDownloader.Create(BACKEND+'get-xvm-configs', UpdateConfigs);
 
   {MessageBox(0, 'XVM Updater '+_VERSION_+' - TEST RELEASE'+#13#10+
                 'DO NOT SHARE'+#13#10+
