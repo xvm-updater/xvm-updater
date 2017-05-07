@@ -134,51 +134,6 @@ object fWindow: TfWindow
     TabOrder = 1
     OnClick = bProcessClick
   end
-  object bgLanguage: TButtonGroup
-    Left = 7
-    Top = 252
-    Width = 266
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    BorderStyle = bsNone
-    ButtonHeight = 25
-    ButtonWidth = 26
-    ButtonOptions = [gboGroupStyle]
-    Images = ilLanguages
-    Items = <
-      item
-        ImageIndex = 0
-      end
-      item
-        ImageIndex = 1
-      end
-      item
-        ImageIndex = 2
-      end
-      item
-        ImageIndex = 3
-      end
-      item
-        ImageIndex = 4
-      end
-      item
-        ImageIndex = 5
-      end
-      item
-        ImageIndex = 6
-      end
-      item
-        ImageIndex = 7
-      end
-      item
-        ImageIndex = 8
-      end
-      item
-        ImageIndex = 9
-      end>
-    TabOrder = 2
-    OnButtonClicked = bgLanguageButtonClicked
-  end
   object gbProgress: TGroupBox
     Left = 8
     Top = 167
@@ -186,7 +141,7 @@ object fWindow: TfWindow
     Height = 78
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Progression : '
-    TabOrder = 3
+    TabOrder = 2
     DesignSize = (
       497
       78)
@@ -207,13 +162,25 @@ object fWindow: TfWindow
       TabOrder = 0
     end
   end
+  object cbLanguage: TComboBox
+    Left = 8
+    Top = 253
+    Width = 49
+    Height = 26
+    Style = csOwnerDrawFixed
+    ItemHeight = 20
+    TabOrder = 3
+    StyleElements = []
+    OnChange = cbLanguageChange
+    OnDrawItem = cbLanguageDrawItem
+  end
   object ilLanguages: TImageList
     ColorDepth = cd24Bit
     Height = 11
-    Left = 280
+    Left = 64
     Top = 248
     Bitmap = {
-      494C01010A000D00100010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
+      494C01010A000D00140010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000210000000100180000000000C018
       0000000000000000000000000000000000007A00007400006E00006A00006400
       005E00005A00005600005000004C00004600004200004000003C00003A00003C

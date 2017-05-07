@@ -21,9 +21,9 @@ unit Main;
 interface
 
 uses
-  Windows, SysUtils, Classes, IOUtils, Forms, FileCtrl, StrUtils, Controls,
-  WoT_Utils, Masks, Languages, ImgList, ButtonGroup, AbUnZper, AbArcTyp,
-  ComCtrls, StdCtrls, System.ImageList, AsyncDownloader, Dialogs;
+  Windows, Graphics, SysUtils, Classes, IOUtils, Forms, FileCtrl, StrUtils,
+  Controls, WoT_Utils, Masks, Languages, ImgList, ButtonGroup, AbUnZper,
+  AbArcTyp, ComCtrls, StdCtrls, System.ImageList, AsyncDownloader, Dialogs;
 
 type
   TfWindow = class(TForm)
@@ -37,17 +37,19 @@ type
     cmbXVMVersion: TComboBox;
     lConfig: TLabel;
     cmbConfig: TComboBox;
-    bgLanguage: TButtonGroup;
     ilLanguages: TImageList;
     gbProgress: TGroupBox;
     lCurrentAction: TLabel;
     pbCurrentAction: TProgressBar;
+    cbLanguage: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure bChangeDirectoryClick(Sender: TObject);
     procedure bProcessClick(Sender: TObject);
     procedure cbKeepConfigClick(Sender: TObject);
-    procedure bgLanguageButtonClicked(Sender: TObject; Index: Integer);
     procedure cmbXVMVersionChange(Sender: TObject);
+    procedure cbLanguageDrawItem(Control: TWinControl; Index: Integer;
+      TheRect: TRect; State: TOwnerDrawState);
+    procedure cbLanguageChange(Sender: TObject);
   private
     VersionsFiles, ConfigsFiles: TStringList;
     WOTDir: String;
@@ -610,9 +612,35 @@ begin
 end;
 
 
-procedure TfWindow.bgLanguageButtonClicked(Sender: TObject; Index: Integer);
+procedure TfWindow.cbLanguageChange(Sender: TObject);
 begin
-  ChangeLanguage(TLanguage(Index));
+  ChangeLanguage(TLanguage(cbLanguage.ItemIndex));
+end;
+
+
+procedure TfWindow.cbLanguageDrawItem(Control: TWinControl; Index: Integer;
+  TheRect: TRect; State: TOwnerDrawState);
+var
+  oX, oY, rX, w, h: Integer;
+  stretchedImage: TBitmap;
+begin
+  rX := cbLanguage.ItemHeight div (ilLanguages.Height + 2);
+  w := ilLanguages.Width * rX;
+  h := ilLanguages.Height * rX;
+  oX := (TheRect.Width - w) div 2;
+  oY := (cbLanguage.ItemHeight - h) div 2;
+
+  stretchedImage := TBitmap.Create;
+  stretchedImage.Width := ilLanguages.Width;
+  stretchedImage.Height := ilLanguages.Height;
+  ilLanguages.Draw(stretchedImage.Canvas, 0, 0, Index);
+
+  with Control as TCustomComboBox do
+  begin
+    Canvas.Brush.Color := clWhite;
+    Canvas.FillRect(TheRect);
+    Canvas.StretchDraw(Rect( TheRect.Left + oX, TheRect.Top + oY, TheRect.Left + oX + w, TheRect.Top + oY + h), stretchedImage);
+  end;
 end;
 
 
@@ -707,7 +735,10 @@ begin
   else if (GetUserDefaultLCID and $00FF) = $0A then ChangeLanguage(lngES)
   else ChangeLanguage(lngEN);
 
-  bgLanguage.ItemIndex := Integer(currentLanguage);
+  cbLanguage.Items.Clear;
+  for I := 1 to ilLanguages.Count do
+    cbLanguage.Items.Add('');
+  cbLanguage.ItemIndex := Integer(currentLanguage);
 
   // FORCING SCRIPT SOURCE FROM COMMAND LINE SUPPORT
   CustomScript := '';
