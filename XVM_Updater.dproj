@@ -3,7 +3,7 @@
         <ProjectGuid>{1D7533F4-434D-4107-86F9-1157F110DE02}</ProjectGuid>
         <ProjectVersion>18.2</ProjectVersion>
         <MainSource>XVM_Updater.dpr</MainSource>
-        <Config Condition="'$(Config)'==''">Débogage</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -103,8 +103,8 @@ installer/updater;FileVersion=2.9.0.1199;InternalName=;LegalCopyright=Copyright 
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Build>1202</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1202;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
+        <VerInfo_Build>1203</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=World of Tank&apos;s XVM mod one click installer/updater;FileVersion=2.9.0.1203;InternalName=;LegalCopyright=Copyright © 2013 - 2017 by Edgar &apos;LaCourgette&apos; Fournival;LegalTrademarks=;OriginalFilename=;ProductName=XVM Updater;ProductVersion=2.9;Comments=;ProgramID=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>

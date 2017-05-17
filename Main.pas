@@ -641,6 +641,8 @@ begin
     Canvas.FillRect(TheRect);
     Canvas.StretchDraw(Rect( TheRect.Left + oX, TheRect.Top + oY, TheRect.Left + oX + w, TheRect.Top + oY + h), stretchedImage);
   end;
+
+  stretchedImage.Free;
 end;
 
 
