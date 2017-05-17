@@ -625,7 +625,7 @@ var
   stretchedImage: TBitmap;
 begin
   rX := cbLanguage.ItemHeight div (ilLanguages.Height + 2);
-  w := ilLanguages.Width * rX;
+  w := (ilLanguages.Width) * rX;
   h := ilLanguages.Height * rX;
   oX := (TheRect.Width - w) div 2;
   oY := (cbLanguage.ItemHeight - h) div 2;
@@ -639,7 +639,7 @@ begin
   begin
     Canvas.Brush.Color := clWhite;
     Canvas.FillRect(TheRect);
-    Canvas.StretchDraw(Rect( TheRect.Left + oX, TheRect.Top + oY, TheRect.Left + oX + w, TheRect.Top + oY + h), stretchedImage);
+    Canvas.StretchDraw(Rect(TheRect.Left + oX, TheRect.Top + oY, TheRect.Left + oX + w, TheRect.Top + oY + h), stretchedImage);
   end;
 
   stretchedImage.Free;

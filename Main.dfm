@@ -42,52 +42,53 @@ object fWindow: TfWindow
     Left = 8
     Top = 47
     Width = 497
-    Height = 115
+    Height = 113
     Caption = 'Options : '
     TabOrder = 0
     DesignSize = (
       497
-      115)
+      113)
     object lXVMversion: TLabel
       Left = 16
-      Top = 82
+      Top = 81
       Width = 92
       Height = 16
       Anchors = [akLeft, akBottom]
       Caption = 'Version d'#39'XVM :'
-      ExplicitTop = 122
+      ExplicitTop = 83
     end
     object lConfig: TLabel
       Left = 264
-      Top = 82
+      Top = 81
       Width = 85
       Height = 16
       Anchors = [akLeft, akBottom]
       Caption = 'Configuration :'
-      ExplicitTop = 122
+      ExplicitTop = 83
     end
     object cbKeepConfig: TCheckBox
       Left = 16
-      Top = 55
+      Top = 52
       Width = 465
       Height = 17
       Anchors = [akLeft, akBottom]
       Caption = 'Garder l'#39'ancienne configuration d'#39'XVM'
       TabOrder = 0
       OnClick = cbKeepConfigClick
+      ExplicitTop = 54
     end
     object eDirectory: TEdit
       AlignWithMargins = True
       Left = 16
       Top = 23
       Width = 342
-      Height = 24
+      Height = 22
       Anchors = [akLeft, akTop, akRight, akBottom]
       AutoSize = False
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -14
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -95,7 +96,7 @@ object fWindow: TfWindow
     end
     object bChangeDirectory: TButton
       Left = 370
-      Top = 23
+      Top = 22
       Width = 111
       Height = 24
       Caption = 'Modifier'
@@ -104,7 +105,7 @@ object fWindow: TfWindow
     end
     object cmbXVMVersion: TComboBox
       Left = 114
-      Top = 80
+      Top = 78
       Width = 134
       Height = 24
       Style = csDropDownList
@@ -112,16 +113,18 @@ object fWindow: TfWindow
       Enabled = False
       TabOrder = 3
       OnChange = cmbXVMVersionChange
+      ExplicitTop = 80
     end
     object cmbConfig: TComboBox
       Left = 354
-      Top = 80
+      Top = 78
       Width = 127
       Height = 24
       Style = csDropDownList
       Anchors = [akLeft, akBottom]
       Enabled = False
       TabOrder = 4
+      ExplicitTop = 80
     end
   end
   object bProcess: TButton
@@ -166,9 +169,16 @@ object fWindow: TfWindow
     Left = 8
     Top = 253
     Width = 45
-    Height = 26
+    Height = 24
     Style = csOwnerDrawFixed
-    ItemHeight = 20
+    Anchors = [akLeft, akBottom]
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ItemHeight = 18
+    ParentFont = False
     TabOrder = 3
     StyleElements = []
     OnChange = cbLanguageChange
@@ -180,7 +190,7 @@ object fWindow: TfWindow
     Left = 64
     Top = 248
     Bitmap = {
-      494C01010A000D003C0010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
+      494C01010A000D00480010000B00FFFFFFFF1910FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000040000000210000000100180000000000C018
       0000000000000000000000000000000000007A00007400006E00006A00006400
       005E00005A00005600005000004C00004600004200004000003C00003A00003C
