@@ -24,7 +24,7 @@ interface
 
 uses
   SysUtils, Windows, Classes, Masks, ShellAPI, ShlObj, ActiveX, Forms, Tlhelp32,
-  ComOBJ;
+  ComOBJ, StrUtils;
 
 // No declaration of this function in Windows unit, strange.
 function GetLongPathName(ShortPathName: PChar; LongPathName: PChar;
@@ -35,7 +35,7 @@ type
   PString = ^String;
 
 function GetTempFolder():String;
-function GetVersion(FileName: String):String;
+function GetVersion(const Directory: String):String;
 procedure GetSubDirectories(const directory: String; List: TStringList);
 function GetDesktop:String;
 function GetStartMenu:String;
@@ -67,29 +67,31 @@ begin
   Result := ExtractLongPathName(Result);
 end;
 
-function GetVersion(FileName: String):String;
+function GetVersion(const Directory: String):String;
 var
-  VerInfoSize: DWORD;
-  VerInfo: Pointer;
-  VerValueSize: DWORD;
-  VerValue: PVSFixedFileInfo;
-  Dummy: DWORD;
+  fileName: String;
+  versionFile: TextFile;
+  line: String;
 begin
-  VerInfoSize := GetFileVersionInfoSize(PChar(FileName), Dummy);
-  if VerInfoSize > 0 then
+  Result := '';
+  fileName := IncludeTrailingPathDelimiter(Directory) + 'version.xml';
+  if FileExists(fileName) then
     begin
-      GetMem(VerInfo, VerInfoSize);
-      GetFileVersionInfo(PChar(FileName), 0, VerInfoSize, VerInfo);
-      VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-
-      with VerValue^ do
-        begin
-          Result := IntToStr(dwFileVersionMS shr 16);
-          Result := Result + '.' + IntToStr(dwFileVersionMS and $FFFF);
-          Result := Result + '.' + IntToStr(dwFileVersionLS shr 16);
-        end;
-      FreeMem(VerInfo, VerInfoSize);
-    end
+      AssignFile(versionFile, fileName);
+      Reset(versionFile);
+      while not Eof(versionFile) do
+      begin
+        ReadLn(versionFile, line);
+        if ContainsText(line, '<branch>') then
+          begin
+            line := StringReplace(line, '<branch>', '', [rfReplaceAll]);
+            line := StringReplace(line, '</branch>', '', [rfReplaceAll]);
+            line := StringReplace(line, ' ', '', [rfReplaceAll]);
+            line := StringReplace(line, 'v', '', [rfReplaceAll]);
+            Result := line
+          end;
+      end;
+    end;
 end;
 
 

@@ -25,7 +25,7 @@ type
   // /!\ Keep the same order in arrays /!\ //
 
 const
-  VERSION = 'v2.9';
+  VERSION = 'v2.10';
 
   LanguageMin: array[TLanguage] of String = ('en', 'fr', 'de', 'pl', 'ru', 'ua', 'hu', 'fi', 'nl', 'es', 'cs');
 

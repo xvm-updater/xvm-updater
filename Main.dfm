@@ -3,7 +3,7 @@ object fWindow: TfWindow
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'XVM Updater v2.9 par LaCourgette'
+  Caption = 'XVM Updater v2.10 par LaCourgette'
   ClientHeight = 285
   ClientWidth = 514
   Color = clBtnFace

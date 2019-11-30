@@ -105,7 +105,7 @@ end;
 procedure TfWindow.SetVersion;
 begin
   eDirectory.Text := WOTDir;
-  Version := GetVersion(WOTDir+'\worldoftanks.exe');
+  Version := GetVersion(WOTDir);
   TAsyncDownloader.Create(BACKEND+'get-xvm-versions?version='+Version, UpdateVersions);
   LastNightlyRev := '';
 end;
